@@ -1,6 +1,3 @@
-Got it, brother. Here’s a very simple, straight-to-the-point version:
-
----
 
 # SU1 Display Server
 
