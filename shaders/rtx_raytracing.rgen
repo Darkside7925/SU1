@@ -1,0 +1,430 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+#extension GL_EXT_nonuniform_qualifier : enable
+#extension GL_EXT_scalar_block_layout : enable
+#extension GL_GOOGLE_include_directive : enable
+
+// RTX Ray Generation Shader
+// Ultra-high quality ray tracing for extreme visual effects
+
+layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS;
+layout(binding = 1, set = 0, rgba32f) uniform image2D image;
+layout(binding = 2, set = 0, rgba32f) uniform image2D normalImage;
+layout(binding = 3, set = 0, rgba32f) uniform image2D materialImage;
+layout(binding = 4, set = 0, rgba32f) uniform image2D motionImage;
+layout(binding = 5, set = 0, rgba16f) uniform image2D depthImage;
+
+layout(binding = 6, set = 0) uniform CameraProperties {
+    mat4 viewInverse;
+    mat4 projInverse;
+    mat4 viewProj;
+    mat4 prevViewProj;
+    vec3 position;
+    float time;
+    vec3 direction;
+    float fov;
+    vec2 resolution;
+    vec2 jitter;
+    uint frameIndex;
+    float exposure;
+    vec3 environmentRotation;
+    float environmentIntensity;
+} camera;
+
+layout(binding = 7, set = 0) uniform RayTracingSettings {
+    uint maxRayDepth;
+    uint samplesPerPixel;
+    float rayEpsilon;
+    float maxRayDistance;
+    bool enableGlobalIllumination;
+    bool enableReflections;
+    bool enableShadows;
+    bool enableCaustics;
+    bool enableVolumetrics;
+    bool enableDenoising;
+    float denoisingStrength;
+    bool enableMotionBlur;
+    float motionBlurStrength;
+    bool enableDOF;
+    float dofFocalDistance;
+    float dofAperture;
+    vec3 sunDirection;
+    vec3 sunColor;
+    float sunIntensity;
+    vec3 skyColor;
+    float skyIntensity;
+} rtSettings;
+
+layout(location = 0) rayPayloadEXT HitPayload {
+    vec3 color;
+    vec3 normal;
+    vec3 position;
+    float distance;
+    int materialIndex;
+    float roughness;
+    float metallic;
+    vec3 emission;
+    bool hit;
+    uint randomSeed;
+    vec3 throughput;
+    vec3 radiance;
+    bool isGlass;
+    float ior;
+    vec3 absorption;
+    bool isVolume;
+    float density;
+} payload;
+
+layout(location = 1) rayPayloadEXT ShadowPayload {
+    bool inShadow;
+    float shadowFactor;
+    vec3 lightColor;
+} shadowPayload;
+
+// Random number generation
+uint wang_hash(inout uint seed) {
+    seed = uint(seed ^ uint(61)) ^ uint(seed >> uint(16));
+    seed *= uint(9);
+    seed = seed ^ (seed >> 4);
+    seed *= uint(0x27d4eb2d);
+    seed = seed ^ (seed >> 15);
+    return seed;
+}
+
+float randomFloat(inout uint seed) {
+    return float(wang_hash(seed)) / 4294967296.0;
+}
+
+vec2 randomVec2(inout uint seed) {
+    return vec2(randomFloat(seed), randomFloat(seed));
+}
+
+vec3 randomVec3(inout uint seed) {
+    return vec3(randomFloat(seed), randomFloat(seed), randomFloat(seed));
+}
+
+vec3 randomUnitVector(inout uint seed) {
+    float a = randomFloat(seed) * 2.0 * 3.14159265;
+    float z = randomFloat(seed) * 2.0 - 1.0;
+    float r = sqrt(1.0 - z * z);
+    return vec3(r * cos(a), r * sin(a), z);
+}
+
+vec3 randomHemisphereVector(vec3 normal, inout uint seed) {
+    vec3 randomDir = randomUnitVector(seed);
+    return dot(randomDir, normal) > 0.0 ? randomDir : -randomDir;
+}
+
+// Sampling functions
+vec3 sampleGGX(vec3 normal, float roughness, inout uint seed) {
+    float alpha = roughness * roughness;
+    float alpha2 = alpha * alpha;
+    
+    vec2 xi = randomVec2(seed);
+    
+    float cosTheta = sqrt((1.0 - xi.x) / (1.0 + (alpha2 - 1.0) * xi.x));
+    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    float phi = 2.0 * 3.14159265 * xi.y;
+    
+    vec3 h = vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+    
+    // Transform to world space
+    vec3 up = abs(normal.z) < 0.999 ? vec3(0, 0, 1) : vec3(1, 0, 0);
+    vec3 tangent = normalize(cross(up, normal));
+    vec3 bitangent = cross(normal, tangent);
+    
+    return normalize(tangent * h.x + bitangent * h.y + normal * h.z);
+}
+
+// BRDF functions
+float distributionGGX(vec3 N, vec3 H, float roughness) {
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+    
+    float num = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = 3.14159265 * denom * denom;
+    
+    return num / denom;
+}
+
+float geometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0);
+    float k = (r * r) / 8.0;
+    
+    float num = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+    
+    return num / denom;
+}
+
+float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = geometrySchlickGGX(NdotV, roughness);
+    float ggx1 = geometrySchlickGGX(NdotL, roughness);
+    
+    return ggx1 * ggx2;
+}
+
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+// Advanced glass BTDF
+vec3 calculateGlassBTDF(vec3 V, vec3 N, vec3 L, float ior, float roughness) {
+    vec3 H = normalize(V + L);
+    float VdotH = dot(V, H);
+    float NdotV = abs(dot(N, V));
+    float NdotL = abs(dot(N, L));
+    float NdotH = abs(dot(N, H));
+    
+    // Fresnel for dielectric
+    vec3 F0 = vec3(pow((1.0 - ior) / (1.0 + ior), 2.0));
+    vec3 F = fresnelSchlick(VdotH, F0);
+    
+    // Distribution and geometry terms
+    float D = distributionGGX(N, H, roughness);
+    float G = geometrySmith(N, V, L, roughness);
+    
+    // BTDF calculation
+    float eta = ior;
+    float sqrtDenom = VdotH + eta * dot(L, H);
+    float denom = sqrtDenom * sqrtDenom;
+    
+    vec3 btdf = (1.0 - F) * abs(VdotH * dot(L, H)) * D * G / (NdotV * NdotL * denom);
+    
+    return btdf;
+}
+
+// Volumetric scattering
+vec3 calculateVolumetricScattering(vec3 rayPos, vec3 rayDir, float distance, inout uint seed) {
+    vec3 scattering = vec3(0.0);
+    float stepSize = distance / 32.0;
+    
+    for (int i = 0; i < 32; i++) {
+        float t = float(i) * stepSize + randomFloat(seed) * stepSize;
+        vec3 samplePos = rayPos + rayDir * t;
+        
+        // Sample volumetric density (could be from 3D texture)
+        float density = 0.01; // Simplified
+        
+        // Phase function (Henyey-Greenstein)
+        float g = 0.3; // Anisotropy factor
+        float cosTheta = dot(rayDir, rtSettings.sunDirection);
+        float phase = (1.0 - g * g) / (4.0 * 3.14159265 * pow(1.0 + g * g - 2.0 * g * cosTheta, 1.5));
+        
+        // Light contribution
+        scattering += rtSettings.sunColor * rtSettings.sunIntensity * density * phase * stepSize;
+    }
+    
+    return scattering;
+}
+
+// Main ray tracing function
+vec3 traceRay(vec3 origin, vec3 direction, inout uint seed) {
+    vec3 radiance = vec3(0.0);
+    vec3 throughput = vec3(1.0);
+    
+    for (uint depth = 0; depth < rtSettings.maxRayDepth; depth++) {
+        payload.hit = false;
+        payload.color = vec3(0.0);
+        payload.normal = vec3(0.0);
+        payload.position = vec3(0.0);
+        payload.distance = 0.0;
+        payload.materialIndex = -1;
+        payload.roughness = 0.0;
+        payload.metallic = 0.0;
+        payload.emission = vec3(0.0);
+        payload.randomSeed = seed;
+        payload.throughput = throughput;
+        payload.radiance = radiance;
+        payload.isGlass = false;
+        payload.ior = 1.0;
+        payload.absorption = vec3(0.0);
+        payload.isVolume = false;
+        payload.density = 0.0;
+        
+        traceRayEXT(topLevelAS, gl_RayFlagsOpaqueEXT, 0xff, 0, 0, 0, origin, rtSettings.rayEpsilon, direction, rtSettings.maxRayDistance, 0);
+        
+        seed = payload.randomSeed;
+        
+        if (!payload.hit) {
+            // Sky/environment contribution
+            radiance += throughput * rtSettings.skyColor * rtSettings.skyIntensity;
+            break;
+        }
+        
+        // Add emission
+        radiance += throughput * payload.emission;
+        
+        // Russian roulette for path termination
+        float maxComponent = max(max(throughput.x, throughput.y), throughput.z);
+        if (depth > 3 && randomFloat(seed) > maxComponent) {
+            break;
+        }
+        throughput /= maxComponent;
+        
+        vec3 hitPos = payload.position;
+        vec3 normal = payload.normal;
+        
+        // Handle different material types
+        if (payload.isGlass) {
+            // Glass BTDF sampling
+            float fresnel = dot(direction, normal);
+            bool entering = fresnel < 0.0;
+            float eta = entering ? 1.0 / payload.ior : payload.ior;
+            
+            if (randomFloat(seed) < abs(fresnel)) {
+                // Reflection
+                direction = reflect(direction, normal);
+            } else {
+                // Refraction
+                direction = refract(direction, normal, eta);
+                if (length(direction) == 0.0) {
+                    // Total internal reflection
+                    direction = reflect(direction, normal);
+                }
+                
+                // Apply absorption
+                if (!entering) {
+                    throughput *= exp(-payload.absorption * payload.distance);
+                }
+            }
+            
+            origin = hitPos + direction * rtSettings.rayEpsilon;
+        } else if (payload.isVolume) {
+            // Volumetric scattering
+            vec3 scattering = calculateVolumetricScattering(origin, direction, payload.distance, seed);
+            radiance += throughput * scattering;
+            
+            // Random walk in volume
+            direction = randomUnitVector(seed);
+            origin = hitPos + direction * rtSettings.rayEpsilon;
+            throughput *= payload.density;
+        } else {
+            // Surface BRDF
+            vec3 V = -direction;
+            vec3 N = normal;
+            
+            // Sample next direction based on material
+            if (payload.metallic > 0.5) {
+                // Metallic - sample GGX distribution
+                vec3 H = sampleGGX(N, payload.roughness, seed);
+                direction = reflect(-V, H);
+                
+                // Evaluate BRDF
+                vec3 L = direction;
+                vec3 F0 = mix(vec3(0.04), payload.color, payload.metallic);
+                vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+                float D = distributionGGX(N, H, payload.roughness);
+                float G = geometrySmith(N, V, L, payload.roughness);
+                
+                vec3 brdf = F * D * G / (4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001);
+                throughput *= brdf * payload.color * max(dot(N, L), 0.0);
+            } else {
+                // Diffuse - cosine weighted sampling
+                direction = randomHemisphereVector(N, seed);
+                throughput *= payload.color * max(dot(N, direction), 0.0) / 3.14159265;
+            }
+            
+            origin = hitPos + N * rtSettings.rayEpsilon;
+        }
+        
+        // Direct lighting (if enabled)
+        if (rtSettings.enableShadows && depth < 3) {
+            vec3 lightDir = rtSettings.sunDirection;
+            vec3 lightColor = rtSettings.sunColor * rtSettings.sunIntensity;
+            
+            // Cast shadow ray
+            shadowPayload.inShadow = false;
+            shadowPayload.shadowFactor = 1.0;
+            shadowPayload.lightColor = lightColor;
+            
+            traceRayEXT(topLevelAS, gl_RayFlagsTerminateOnFirstHitEXT | gl_RayFlagsOpaqueEXT | gl_RayFlagsSkipClosestHitShaderEXT, 0xff, 1, 0, 1, hitPos + normal * rtSettings.rayEpsilon, rtSettings.rayEpsilon, lightDir, rtSettings.maxRayDistance, 1);
+            
+            if (!shadowPayload.inShadow) {
+                float NdotL = max(dot(normal, lightDir), 0.0);
+                radiance += throughput * lightColor * NdotL;
+            }
+        }
+    }
+    
+    return radiance;
+}
+
+// Temporal accumulation
+vec3 temporalAccumulation(ivec2 coord, vec3 currentColor) {
+    if (camera.frameIndex == 0) {
+        return currentColor;
+    }
+    
+    // Motion vector based reprojection
+    vec2 motionVector = imageLoad(motionImage, coord).xy;
+    ivec2 prevCoord = coord - ivec2(motionVector * camera.resolution);
+    
+    if (prevCoord.x >= 0 && prevCoord.y >= 0 && prevCoord.x < int(camera.resolution.x) && prevCoord.y < int(camera.resolution.y)) {
+        vec3 prevColor = imageLoad(image, prevCoord).rgb;
+        
+        // Temporal blend factor
+        float blendFactor = 0.05; // Accumulate over ~20 frames
+        return mix(prevColor, currentColor, blendFactor);
+    }
+    
+    return currentColor;
+}
+
+void main() {
+    const ivec2 coord = ivec2(gl_LaunchIDEXT.xy);
+    const vec2 pixelCenter = vec2(coord) + vec2(0.5);
+    
+    // Initialize random seed
+    uint seed = uint(coord.x * 1973 + coord.y * 9277 + camera.frameIndex * 26699) | 1;
+    
+    vec3 finalColor = vec3(0.0);
+    
+    // Multiple samples per pixel for anti-aliasing
+    for (uint sample = 0; sample < rtSettings.samplesPerPixel; sample++) {
+        // Jittered pixel coordinates for anti-aliasing
+        vec2 jitter = randomVec2(seed) - 0.5;
+        vec2 inUV = (pixelCenter + jitter + camera.jitter) / camera.resolution;
+        vec2 d = inUV * 2.0 - 1.0;
+        
+        // Depth of field jitter
+        vec2 aperture = vec2(0.0);
+        if (rtSettings.enableDOF) {
+            float angle = randomFloat(seed) * 2.0 * 3.14159265;
+            float radius = sqrt(randomFloat(seed)) * rtSettings.dofAperture;
+            aperture = vec2(cos(angle), sin(angle)) * radius;
+        }
+        
+        // Ray generation
+        vec4 origin = camera.viewInverse * vec4(aperture, 0, 1);
+        vec4 target = camera.projInverse * vec4(d.x, d.y, 1, 1);
+        vec4 direction = camera.viewInverse * vec4(normalize(target.xyz), 0);
+        
+        // Focus distance for DOF
+        if (rtSettings.enableDOF) {
+            vec3 focusPoint = origin.xyz + direction.xyz * rtSettings.dofFocalDistance;
+            direction.xyz = normalize(focusPoint - origin.xyz);
+        }
+        
+        // Trace primary ray
+        vec3 sampleColor = traceRay(origin.xyz, direction.xyz, seed);
+        finalColor += sampleColor;
+    }
+    
+    finalColor /= float(rtSettings.samplesPerPixel);
+    
+    // Temporal accumulation for denoising
+    finalColor = temporalAccumulation(coord, finalColor);
+    
+    // Tone mapping and gamma correction
+    finalColor = finalColor / (finalColor + vec3(1.0)); // Reinhard tone mapping
+    finalColor = pow(finalColor, vec3(1.0 / 2.2)); // Gamma correction
+    
+    // Output
+    imageStore(image, coord, vec4(finalColor, 1.0));
+}

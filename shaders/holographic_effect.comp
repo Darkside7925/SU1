@@ -1,0 +1,337 @@
+#version 450
+
+// Holographic Effect Compute Shader
+// Advanced holographic interference and diffraction effects
+
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+layout(binding = 0, rgba32f) uniform readonly image2D inputImage;
+layout(binding = 1, rgba32f) uniform writeonly image2D outputImage;
+layout(binding = 2, rgba32f) uniform writeonly image2D depthImage;
+layout(binding = 3, rgba32f) uniform writeonly image2D normalImage;
+
+layout(binding = 4) uniform HolographicParameters {
+    float time;
+    float interferencePattern;
+    float diffractionStrength;
+    float chromaticAberration;
+    uint depthLayers;
+    float iridescenceFactor;
+    float phaseShift;
+    float amplitudeModulation;
+    vec2 resolution;
+    float wavelengthR;
+    float wavelengthG;
+    float wavelengthB;
+    float refractionIndex;
+    float hologramThickness;
+    vec3 lightDirection;
+    float lightIntensity;
+    bool enableVolumetric;
+    float volumetricDensity;
+    mat4 viewMatrix;
+    mat4 projMatrix;
+} holo;
+
+layout(binding = 5) uniform sampler2D noiseTexture;
+layout(binding = 6) uniform sampler2D interferenceTexture;
+layout(binding = 7) uniform sampler2D fresnelLUT;
+
+const float PI = 3.14159265359;
+const float TAU = 6.28318530718;
+
+// Complex number operations
+struct Complex {
+    float real;
+    float imag;
+};
+
+Complex complexMul(Complex a, Complex b) {
+    return Complex(a.real * b.real - a.imag * b.imag, a.real * b.imag + a.imag * b.real);
+}
+
+Complex complexAdd(Complex a, Complex b) {
+    return Complex(a.real + b.real, a.imag + b.imag);
+}
+
+float complexMagnitude(Complex c) {
+    return sqrt(c.real * c.real + c.imag * c.imag);
+}
+
+// Advanced noise functions
+float hash21(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    
+    float a = hash21(i);
+    float b = hash21(i + vec2(1.0, 0.0));
+    float c = hash21(i + vec2(0.0, 1.0));
+    float d = hash21(i + vec2(1.0, 1.0));
+    
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    
+    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+}
+
+float fbm(vec2 p) {
+    float value = 0.0;
+    float amplitude = 0.5;
+    float frequency = 1.0;
+    
+    for (int i = 0; i < 6; i++) {
+        value += amplitude * noise(p * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+    }
+    
+    return value;
+}
+
+// Holographic interference pattern calculation
+vec3 calculateInterferencePattern(vec2 uv, float depth) {
+    vec2 coord = uv * holo.resolution;
+    
+    // Object wave (reference from the scene)
+    vec4 sceneColor = imageLoad(inputImage, ivec2(coord));
+    Complex objectWave = Complex(sceneColor.r * cos(depth * TAU), sceneColor.r * sin(depth * TAU));
+    
+    // Reference wave (coherent laser beam)
+    float referencePhase = dot(coord, holo.lightDirection.xy) * 0.01 + holo.time * 2.0;
+    Complex referenceWave = Complex(cos(referencePhase), sin(referencePhase));
+    
+    // Interference between object and reference waves
+    Complex interference = complexAdd(objectWave, referenceWave);
+    float intensity = complexMagnitude(interference);
+    
+    // Create holographic fringes
+    float fringe = intensity * intensity; // Square law detection
+    
+    // Add noise for realistic hologram appearance
+    float hologramNoise = fbm(coord * 0.01 + vec2(holo.time * 0.1)) * 0.1;
+    fringe += hologramNoise;
+    
+    return vec3(fringe);
+}
+
+// Chromatic aberration for holographic reconstruction
+vec3 applyHolographicDispersion(vec2 uv) {
+    float aberration = holo.chromaticAberration;
+    
+    // Different reconstruction angles for RGB
+    vec2 offsetR = vec2(aberration * 0.02, 0.0);
+    vec2 offsetG = vec2(0.0, 0.0);
+    vec2 offsetB = vec2(-aberration * 0.02, 0.0);
+    
+    float r = calculateInterferencePattern(uv + offsetR, 1.0).r;
+    float g = calculateInterferencePattern(uv + offsetG, 1.0).g;
+    float b = calculateInterferencePattern(uv + offsetB, 1.0).b;
+    
+    return vec3(r, g, b);
+}
+
+// Diffraction grating simulation
+vec3 simulateDiffraction(vec2 uv, vec3 inputColor) {
+    float gratingSpacing = 0.001; // Grating spacing in normalized coordinates
+    
+    vec3 diffractedColor = vec3(0.0);
+    
+    // Simulate multiple diffraction orders
+    for (int order = -2; order <= 2; order++) {
+        if (order == 0) continue; // Skip zero order
+        
+        float orderStrength = 1.0 / (float(abs(order)) + 1.0);
+        
+        // Calculate diffraction angle for each wavelength
+        float angleR = asin(float(order) * holo.wavelengthR / gratingSpacing);
+        float angleG = asin(float(order) * holo.wavelengthG / gratingSpacing);
+        float angleB = asin(float(order) * holo.wavelengthB / gratingSpacing);
+        
+        // Apply angular displacement
+        vec2 dispR = vec2(sin(angleR), cos(angleR)) * holo.diffractionStrength * 0.01;
+        vec2 dispG = vec2(sin(angleG), cos(angleG)) * holo.diffractionStrength * 0.01;
+        vec2 dispB = vec2(sin(angleB), cos(angleB)) * holo.diffractionStrength * 0.01;
+        
+        // Sample displaced colors
+        float r = texture(sampler2D(inputImage), uv + dispR).r;
+        float g = texture(sampler2D(inputImage), uv + dispG).g;
+        float b = texture(sampler2D(inputImage), uv + dispB).b;
+        
+        diffractedColor += vec3(r, g, b) * orderStrength;
+    }
+    
+    return mix(inputColor, diffractedColor, holo.diffractionStrength);
+}
+
+// Fresnel reflection calculation for holographic layers
+float calculateFresnelReflection(float cosTheta, float n1, float n2) {
+    float r0 = pow((n1 - n2) / (n1 + n2), 2.0);
+    return r0 + (1.0 - r0) * pow(1.0 - cosTheta, 5.0);
+}
+
+// Multi-layer holographic reconstruction
+vec3 reconstructMultiLayerHologram(vec2 uv) {
+    vec3 reconstructedColor = vec3(0.0);
+    float totalWeight = 0.0;
+    
+    // Simulate multiple depth layers
+    for (uint layer = 0; layer < holo.depthLayers; layer++) {
+        float layerDepth = float(layer) / float(holo.depthLayers - 1);
+        
+        // Calculate layer position in 3D space
+        vec3 layerPos = vec3(uv * 2.0 - 1.0, layerDepth * 2.0 - 1.0);
+        
+        // Transform to view space
+        vec4 viewPos = holo.viewMatrix * vec4(layerPos, 1.0);
+        float viewDepth = -viewPos.z;
+        
+        // Weight based on distance (closer layers are brighter)
+        float layerWeight = 1.0 / (1.0 + viewDepth * 0.1);
+        
+        // Calculate interference pattern for this layer
+        vec3 layerColor = calculateInterferencePattern(uv, layerDepth);
+        
+        // Apply Fresnel effects for layer interfaces
+        vec3 normal = vec3(0.0, 0.0, 1.0); // Simplified
+        vec3 viewDir = normalize(-viewPos.xyz);
+        float fresnel = calculateFresnelReflection(dot(normal, viewDir), 1.0, holo.refractionIndex);
+        
+        layerColor *= (1.0 - fresnel * 0.5); // Reduce intensity due to reflection losses
+        
+        reconstructedColor += layerColor * layerWeight;
+        totalWeight += layerWeight;
+    }
+    
+    return reconstructedColor / totalWeight;
+}
+
+// Iridescence calculation for holographic surfaces
+vec3 calculateIridescence(vec2 uv, vec3 normal, vec3 viewDir) {
+    float cosTheta = abs(dot(viewDir, normal));
+    
+    // Thin film interference
+    float thickness = holo.hologramThickness;
+    float phase = 2.0 * PI * thickness * cosTheta * holo.refractionIndex;
+    
+    // Calculate interference for RGB wavelengths
+    float interferenceR = 0.5 * (1.0 + cos(phase / holo.wavelengthR));
+    float interferenceG = 0.5 * (1.0 + cos(phase / holo.wavelengthG));
+    float interferenceB = 0.5 * (1.0 + cos(phase / holo.wavelengthB));
+    
+    vec3 iridescence = vec3(interferenceR, interferenceG, interferenceB);
+    
+    // Modulate with base color
+    vec3 baseColor = texture(sampler2D(inputImage), uv).rgb;
+    
+    return mix(baseColor, iridescence, holo.iridescenceFactor);
+}
+
+// Volumetric holographic effects
+vec3 calculateVolumetricHologram(vec2 uv, vec3 rayDir) {
+    if (!holo.enableVolumetric) return vec3(0.0);
+    
+    vec3 volumetricColor = vec3(0.0);
+    float stepSize = 0.1;
+    int steps = 20;
+    
+    for (int i = 0; i < steps; i++) {
+        float t = float(i) * stepSize;
+        vec3 samplePos = vec3(uv * 2.0 - 1.0, 0.0) + rayDir * t;
+        
+        // Sample volumetric density
+        float density = holo.volumetricDensity * fbm(samplePos.xy * 2.0 + vec2(holo.time * 0.1));
+        
+        if (density > 0.01) {
+            // Calculate holographic scattering
+            vec3 scatteringColor = calculateInterferencePattern(samplePos.xy * 0.5 + 0.5, samplePos.z);
+            
+            // Apply phase function (simplified Henyey-Greenstein)
+            float g = 0.3;
+            float cosTheta = dot(rayDir, holo.lightDirection);
+            float phase = (1.0 - g * g) / (4.0 * PI * pow(1.0 + g * g - 2.0 * g * cosTheta, 1.5));
+            
+            volumetricColor += scatteringColor * density * phase * stepSize;
+        }
+    }
+    
+    return volumetricColor * holo.lightIntensity;
+}
+
+// Holographic speckle noise
+vec3 addSpeckleNoise(vec3 color, vec2 uv) {
+    // Simulate laser speckle patterns
+    vec2 speckleCoord = uv * holo.resolution * 0.5;
+    float speckle = fbm(speckleCoord + vec2(holo.time * 0.05)) * 0.1;
+    
+    // Apply constructive/destructive interference
+    float interference = sin(speckle * TAU) * 0.05;
+    
+    return color * (1.0 + interference);
+}
+
+// Main holographic reconstruction function
+vec3 reconstructHologram(vec2 uv) {
+    // Multi-layer holographic reconstruction
+    vec3 hologramColor = reconstructMultiLayerHologram(uv);
+    
+    // Apply chromatic dispersion
+    hologramColor = applyHolographicDispersion(uv);
+    
+    // Apply diffraction effects
+    hologramColor = simulateDiffraction(uv, hologramColor);
+    
+    // Calculate iridescence
+    vec3 normal = vec3(0.0, 0.0, 1.0); // Simplified
+    vec3 viewDir = vec3(0.0, 0.0, -1.0); // Simplified
+    vec3 iridescence = calculateIridescence(uv, normal, viewDir);
+    hologramColor = mix(hologramColor, iridescence, 0.3);
+    
+    // Add volumetric effects
+    vec3 rayDir = normalize(vec3(uv * 2.0 - 1.0, -1.0));
+    vec3 volumetric = calculateVolumetricHologram(uv, rayDir);
+    hologramColor += volumetric;
+    
+    // Add speckle noise for realism
+    hologramColor = addSpeckleNoise(hologramColor, uv);
+    
+    // Amplitude modulation
+    float modulation = 1.0 + holo.amplitudeModulation * sin(holo.time * 5.0 + uv.x * 10.0);
+    hologramColor *= modulation;
+    
+    return hologramColor;
+}
+
+void main() {
+    ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
+    vec2 uv = vec2(coord) / holo.resolution;
+    
+    // Check bounds
+    if (coord.x >= int(holo.resolution.x) || coord.y >= int(holo.resolution.y)) {
+        return;
+    }
+    
+    // Reconstruct holographic image
+    vec3 holographicColor = reconstructHologram(uv);
+    
+    // Tone mapping for holographic brightness
+    holographicColor = holographicColor / (holographicColor + vec3(1.0));
+    
+    // Gamma correction
+    holographicColor = pow(holographicColor, vec3(1.0 / 2.2));
+    
+    // Output color
+    imageStore(outputImage, coord, vec4(holographicColor, 1.0));
+    
+    // Output depth information (simplified)
+    float depth = length(holographicColor) * 0.5;
+    imageStore(depthImage, coord, vec4(depth, depth, depth, 1.0));
+    
+    // Output normal information (simplified)
+    vec3 normal = normalize(vec3(dFdx(holographicColor.r), dFdy(holographicColor.r), 1.0));
+    imageStore(normalImage, coord, vec4(normal * 0.5 + 0.5, 1.0));
+}
