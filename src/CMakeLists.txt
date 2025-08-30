@@ -14,6 +14,22 @@ set(SU1_SOURCES
     enhanced_window_decorator.cpp
     enhanced_taskbar.cpp
     advanced_app_switcher.cpp
+    neural_workspace_manager.cpp
+    quantum_compositor.cpp
+    consciousness_driven_ui.cpp
+    holographic_particle_system.cpp
+    neural_gesture_recognition.cpp
+    quantum_ui_renderer.cpp
+    fractal_animation_engine.cpp
+    consciousness_simulation_system.cpp
+    advanced_settings_manager.cpp
+    advanced_styling_system.cpp
+    fluid_animation_controller.cpp
+    advanced_window_styling.cpp
+    high_performance_quantum_renderer.cpp
+    performance_mode_manager.cpp
+    configuration_registry.cpp
+    performance_profiler.cpp
 )
 
 add_executable(su1 ${SU1_SOURCES})
