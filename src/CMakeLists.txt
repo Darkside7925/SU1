@@ -1,0 +1,63 @@
+set(SU1_SOURCES
+    main.cpp
+    display_manager.cpp
+    window_manager.cpp
+    ui_components.cpp
+    theming.cpp
+    ai_compositor.cpp
+    quantum_window_manager.cpp
+    extreme_graphics_engine.cpp
+    gpu_accelerated_ui.cpp
+    advanced_input_processor.cpp
+    neural_theme_engine.cpp
+    fluid_animation_engine.cpp
+    enhanced_window_decorator.cpp
+    enhanced_taskbar.cpp
+    advanced_app_switcher.cpp
+)
+
+add_executable(su1 ${SU1_SOURCES})
+
+target_link_libraries(su1
+    ${DRM_LIBRARIES}
+    ${GBM_LIBRARIES}
+    ${EGL_LIBRARIES}
+    ${GLES2_LIBRARIES}
+    ${INPUT_LIBRARIES}
+    ${UDEV_LIBRARIES}
+    ${CAIRO_LIBRARIES}
+    ${PANGO_LIBRARIES}
+    ${FREETYPE_LIBRARIES}
+    ${HARFBUZZ_LIBRARIES}
+    ${PIXMAN_LIBRARIES}
+    ${LIBRSVG_LIBRARIES}
+    ${JSON_LIBRARIES}
+    ${GLIB_LIBRARIES}
+    ${GIO_LIBRARIES}
+    ${GOBJECT_LIBRARIES}
+    ${GDK_PIXBUF_LIBRARIES}
+    ${GTK_LIBRARIES}
+    ${GMODULE_LIBRARIES}
+    Vulkan::Vulkan
+    Threads::Threads
+    dl
+    m
+    rt
+    numa
+)
+
+target_compile_options(su1 PRIVATE
+    -O3
+    -march=native
+    -mtune=native
+    -flto
+    -fomit-frame-pointer
+    -ffast-math
+    -funroll-loops
+    -fno-exceptions
+    -fno-rtti
+    -Wall
+    -Wextra
+    -Werror
+    -Wno-unused-parameter
+)

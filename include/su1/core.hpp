@@ -1246,6 +1246,4 @@ private:
     Atomic<bool> quit_requested_;
 };
 
-}
-
-#endif
+} // namespace su1

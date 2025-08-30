@@ -1,9 +1,7 @@
 
 # SU1 Desktop Environment
 
-## Overview
-
-SU1 is a desktop environment for Linux systems. It provides window management, theming, and user interface components.
+SU1 is a desktop environment that runs on the S1U display server. It provides a complete user interface with advanced window management and visual effects.
 
 ## Features
 
@@ -15,74 +13,75 @@ SU1 is a desktop environment for Linux systems. It provides window management, t
 - Virtual workspaces
 - Window grouping
 
-### AI Compositor
-- Predictive rendering
-- Neural optimization
-- Emotion detection
-- Performance adaptation
+### Smart Compositor
+- Automatic rendering optimization
+- Performance monitoring
 - Resource management
-- Learning algorithms
+- Adaptive quality
+- Smooth animations
+- GPU acceleration
 
-### Quantum Window Manager
-- Superposition window states
-- Entanglement synchronization
-- Quantum layouts
-- Consciousness awareness
-- Sacred geometry positioning
-- Uncertainty principles
+### Advanced Window Manager
+- Multiple window layouts
+- Workspace management
+- Window grouping
+- Smart positioning
+- Automatic organization
+- Multi-monitor support
 
-### Theming System
-- Dynamic theme adaptation
-- Neural theming engine
-- Emotion-based theming
-- Environmental adaptation
-- Multiple theme types
+### Theme System
+- Multiple built-in themes
+- Dark and light modes
 - Custom theme creation
+- Automatic adaptation
+- Color schemes
+- Visual effects
 
 ### Available Themes
 - Default theme
 - Dark theme
 - Light theme
 - High contrast theme
-- Liquid glass theme
-- Holographic theme
-- Quantum theme
-- Consciousness theme
-- Transcendent theme
-- Ultimate theme
+- Glass theme
+- Modern theme
+- Classic theme
+- Gaming theme
+- Minimal theme
+- Productivity theme
 
 ### User Interface
-- Glass panels
-- Status bars
-- Application dock
+- Status bars and panels
+- Application taskbar
+- System tray
 - Menu systems
 - Notification system
-- Settings interface
+- Settings panel
+- App switcher
 
-### Graphics Effects
-- GPU acceleration
-- Blur effects
+### Visual Effects
+- Smooth animations
+- Blur backgrounds
+- Window shadows
 - Glow effects
-- Particle systems
-- Glass physics
-- Lighting effects
-- Shadow rendering
+- Transparency
+- Fade transitions
+- Glass effects
 
-### Input Processing
-- Multi-modal input
-- Gesture recognition
-- Eye tracking support
-- Brain-computer interface
+### Input Support
+- Mouse and keyboard
 - Touch input
-- Voice commands
+- Gesture recognition
+- Multiple input devices
+- Custom shortcuts
+- Accessibility features
 
 ### Performance Features
-- Real-time optimization
-- Memory management
-- CPU utilization
-- GPU optimization
+- Fast rendering
+- Memory optimization
+- CPU efficiency
+- GPU acceleration
 - Power management
-- Thermal control
+- Smooth animations
 
 ## System Requirements
 
@@ -103,28 +102,43 @@ make -j$(nproc)
 sudo make install
 ```
 
+## Usage
+
+Start SU1 after starting S1U:
+
+```bash
+s1u &  # Start display server
+su1    # Start desktop environment
+```
+
 ## Configuration
 
-```cpp
-// Example configuration
-auto theme_manager = ThemeManager::create();
-theme_manager->set_current_theme("quantum");
+Edit `~/.config/su1/config.conf`:
 
-auto compositor = AICompositor::create();
-compositor->enable_neural_optimization(true);
+```ini
+[theme]
+name = dark
+animations = true
+transparency = 0.9
 
-auto window_manager = QuantumWindowManager::create();
-window_manager->enable_superposition(true);
+[window]
+layout = tiling
+gaps = 10
+borders = 2
+
+[performance]
+gpu_acceleration = true
+animations = true
 ```
 
 ## Components
 
-- **AI Compositor**: Intelligent rendering system
-- **Quantum Window Manager**: Advanced window management
-- **Theme Manager**: Dynamic theming system
-- **Input Manager**: Multi-modal input processing
-- **Display Manager**: Multi-monitor support
-- **Application Framework**: UI component system
+- **Window Manager**: Manages application windows
+- **Compositor**: Renders graphics and effects  
+- **Theme Manager**: Handles visual themes
+- **Input Manager**: Processes user input
+- **Taskbar**: Application and system management
+- **App Switcher**: Fast application switching
 
 ## License
 
