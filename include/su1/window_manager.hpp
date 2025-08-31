@@ -24,21 +24,7 @@ enum class LayoutType : u32 {
     Ultimate
 };
 
-enum class WindowState : u32 {
-    Normal,
-    Minimized,
-    Maximized,
-    Fullscreen,
-    Shaded,
-    Sticky,
-    Modal,
-    Above,
-    Below,
-    Hidden,
-    Focused,
-    Active,
-    Urgent
-};
+// WindowState enum is defined in window.hpp
 
 enum class WindowAnimationType : u32 {
     None,
@@ -371,5 +357,3 @@ private:
 using WindowManagerPtr = SharedPtr<WindowManager>;
 
 }
-
-#endif

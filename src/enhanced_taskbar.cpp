@@ -1404,3 +1404,4 @@ void EnhancedTaskbar::cleanup_vulkan_resources() {
 }
 
 } // namespace SU1
+

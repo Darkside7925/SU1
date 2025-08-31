@@ -408,10 +408,10 @@ public:
     const Rect& get_bounds() const { return bounds_; }
     void set_bounds(const Rect& bounds);
     
-    Point get_position() const { return Point{bounds_.x, bounds_.y}; }
+    Point get_position() const { return bounds_.position; }
     void set_position(const Point& position);
     
-    Size get_size() const { return Size{bounds_.width, bounds_.height}; }
+    Size get_size() const { return bounds_.size; }
     void set_size(const Size& size);
     
     bool is_visible() const { return style_.visible; }
@@ -852,4 +852,3 @@ using UIManagerPtr = SharedPtr<UIManager>;
 
 }
 
-#endif

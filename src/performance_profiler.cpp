@@ -490,3 +490,4 @@ void PerformanceProfiler::set_cleanup_interval(int seconds) {
 }
 
 } // namespace SU1
+

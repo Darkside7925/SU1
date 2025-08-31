@@ -1,14 +1,44 @@
 #include "su1/ui_components.hpp"
-#include "su1/logging.hpp"
-#include "su1/profiler.hpp"
-#include <algorithm>
-#include <cmath>
+#include "su1/core.hpp"
+#include <iostream>
+#include <memory>
 
 namespace su1 {
 
-// ComponentStyle implementation
-ComponentStyle::ComponentStyle()
-    : background_color{0.2f, 0.2f, 0.2f, 0.9f}
+UIComponents::UIComponents()
+    : initialized_(false) {
+    std::cout << "[UI_COMPONENTS] UIComponents created" << std::endl;
+}
+
+UIComponents::~UIComponents() {
+    if (initialized_) {
+        shutdown();
+    }
+}
+
+bool UIComponents::initialize() {
+    std::cout << "[UI_COMPONENTS] Initializing UI components..." << std::endl;
+
+    initialized_ = true;
+
+    std::cout << "[UI_COMPONENTS] UI components initialized successfully" << std::endl;
+    return true;
+}
+
+void UIComponents::shutdown() {
+    if (initialized_) {
+        std::cout << "[UI_COMPONENTS] Shutting down UI components..." << std::endl;
+
+        initialized_ = false;
+        std::cout << "[UI_COMPONENTS] UI components shutdown complete" << std::endl;
+    }
+}
+
+bool UIComponents::is_initialized() const {
+    return initialized_;
+}
+
+} // namespace su1
     , foreground_color{1.0f, 1.0f, 1.0f, 1.0f}
     , border_color{0.4f, 0.4f, 0.4f, 1.0f}
     , shadow_color{0.0f, 0.0f, 0.0f, 0.5f}

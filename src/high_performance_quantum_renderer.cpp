@@ -596,3 +596,4 @@ float HighPerformanceQuantumRenderer::get_current_fps() const {
 }
 
 } // namespace SU1
+

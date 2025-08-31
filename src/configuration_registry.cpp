@@ -549,3 +549,4 @@ void ConfigurationRegistry::set_bool(const std::string& section, const std::stri
 }
 
 } // namespace SU1
+

@@ -634,3 +634,4 @@ String format_animation_statistics(const FluidAnimationStats& stats);
 f32 evaluate_easing_function(const String& function_name, f32 t);
 
 } // namespace SU1
+

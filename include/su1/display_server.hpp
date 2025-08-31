@@ -3,185 +3,8 @@
 #include "su1/core.hpp"
 #include "su1/display_manager.hpp"
 #include "su1/window_manager.hpp"
-#include "su1/compositor.hpp"
-#include "su1/input_manager.hpp"
 #include "su1/renderer.hpp"
-#include "su1/theme.hpp"
-#include "su1/config.hpp"
-#include "su1/plugin_manager.hpp"
-#include "su1/notification_manager.hpp"
-#include "su1/power_manager.hpp"
-#include "su1/security_manager.hpp"
-#include "su1/performance_monitor.hpp"
-#include "su1/accessibility_manager.hpp"
-#include "su1/hotkey_manager.hpp"
-#include "su1/animation_engine.hpp"
-#include "su1/effect_engine.hpp"
-#include "su1/resource_manager.hpp"
-#include "su1/session_manager.hpp"
-#include "su1/network_manager.hpp"
-#include "su1/audio_manager.hpp"
-#include "su1/video_manager.hpp"
-#include "su1/camera_manager.hpp"
-#include "su1/sensor_manager.hpp"
-#include "su1/bluetooth_manager.hpp"
-#include "su1/wifi_manager.hpp"
-#include "su1/cellular_manager.hpp"
-#include "su1/gps_manager.hpp"
-#include "su1/nfc_manager.hpp"
-#include "su1/rfid_manager.hpp"
-#include "su1/barcode_manager.hpp"
-#include "su1/fingerprint_manager.hpp"
-#include "su1/face_manager.hpp"
-#include "su1/iris_manager.hpp"
-#include "su1/voice_manager.hpp"
-#include "su1/gesture_manager.hpp"
-#include "su1/haptic_manager.hpp"
-#include "su1/force_manager.hpp"
-#include "su1/pressure_manager.hpp"
-#include "su1/temperature_manager.hpp"
-#include "su1/humidity_manager.hpp"
-#include "su1/light_manager.hpp"
-#include "su1/color_manager.hpp"
-#include "su1/proximity_manager.hpp"
-#include "su1/acceleration_manager.hpp"
-#include "su1/gyroscope_manager.hpp"
-#include "su1/magnetometer_manager.hpp"
-#include "su1/barometer_manager.hpp"
-#include "su1/altimeter_manager.hpp"
-#include "su1/compass_manager.hpp"
-#include "su1/pedometer_manager.hpp"
-#include "su1/step_manager.hpp"
-#include "su1/activity_manager.hpp"
-#include "su1/heart_rate_manager.hpp"
-#include "su1/blood_pressure_manager.hpp"
-#include "su1/glucose_manager.hpp"
-#include "su1/oxygen_manager.hpp"
-#include "su1/ecg_manager.hpp"
-#include "su1/emg_manager.hpp"
-#include "su1/eeg_manager.hpp"
-#include "su1/eog_manager.hpp"
-#include "su1/gsr_manager.hpp"
-#include "su1/respiration_manager.hpp"
-#include "su1/body_temperature_manager.hpp"
-#include "su1/skin_temperature_manager.hpp"
-#include "su1/ambient_temperature_manager.hpp"
-#include "su1/uv_manager.hpp"
-#include "su1/radiation_manager.hpp"
-#include "su1/chemical_manager.hpp"
-#include "su1/biological_manager.hpp"
-#include "su1/genetic_manager.hpp"
-#include "su1/neural_manager.hpp"
-#include "su1/quantum_manager.hpp"
-#include "su1/relativistic_manager.hpp"
-#include "su1/subatomic_manager.hpp"
-#include "su1/nanoscopic_manager.hpp"
-#include "su1/microscopic_manager.hpp"
-#include "su1/macroscopic_manager.hpp"
-#include "su1/cosmic_manager.hpp"
-#include "su1/universal_manager.hpp"
-#include "su1/multiversal_manager.hpp"
-#include "su1/omniversal_manager.hpp"
-#include "su1/quantum_computing_manager.hpp"
-#include "su1/relativistic_computing_manager.hpp"
-#include "su1/subatomic_computing_manager.hpp"
-#include "su1/nanoscopic_computing_manager.hpp"
-#include "su1/microscopic_computing_manager.hpp"
-#include "su1/macroscopic_computing_manager.hpp"
-#include "su1/cosmic_computing_manager.hpp"
-#include "su1/universal_computing_manager.hpp"
-#include "su1/multiversal_computing_manager.hpp"
-#include "su1/omniversal_computing_manager.hpp"
-#include "su1/quantum_computing_manager_2.hpp"
-#include "su1/relativistic_computing_manager_2.hpp"
-#include "su1/subatomic_computing_manager_2.hpp"
-#include "su1/nanoscopic_computing_manager_2.hpp"
-#include "su1/microscopic_computing_manager_2.hpp"
-#include "su1/macroscopic_computing_manager_2.hpp"
-#include "su1/cosmic_computing_manager_2.hpp"
-#include "su1/universal_computing_manager_2.hpp"
-#include "su1/multiversal_computing_manager_2.hpp"
-#include "su1/omniversal_computing_manager_2.hpp"
-#include "su1/quantum_computing_manager_3.hpp"
-#include "su1/relativistic_computing_manager_3.hpp"
-#include "su1/subatomic_computing_manager_3.hpp"
-#include "su1/nanoscopic_computing_manager_3.hpp"
-#include "su1/microscopic_computing_manager_3.hpp"
-#include "su1/macroscopic_computing_manager_3.hpp"
-#include "su1/cosmic_computing_manager_3.hpp"
-#include "su1/universal_computing_manager_3.hpp"
-#include "su1/multiversal_computing_manager_3.hpp"
-#include "su1/omniversal_computing_manager_3.hpp"
-#include "su1/quantum_computing_manager_4.hpp"
-#include "su1/relativistic_computing_manager_4.hpp"
-#include "su1/subatomic_computing_manager_4.hpp"
-#include "su1/nanoscopic_computing_manager_4.hpp"
-#include "su1/microscopic_computing_manager_4.hpp"
-#include "su1/macroscopic_computing_manager_4.hpp"
-#include "su1/cosmic_computing_manager_4.hpp"
-#include "su1/universal_computing_manager_4.hpp"
-#include "su1/multiversal_computing_manager_4.hpp"
-#include "su1/omniversal_computing_manager_4.hpp"
-#include "su1/quantum_computing_manager_5.hpp"
-#include "su1/relativistic_computing_manager_5.hpp"
-#include "su1/subatomic_computing_manager_5.hpp"
-#include "su1/nanoscopic_computing_manager_5.hpp"
-#include "su1/microscopic_computing_manager_5.hpp"
-#include "su1/macroscopic_computing_manager_5.hpp"
-#include "su1/cosmic_computing_manager_5.hpp"
-#include "su1/universal_computing_manager_5.hpp"
-#include "su1/multiversal_computing_manager_5.hpp"
-#include "su1/omniversal_computing_manager_5.hpp"
-#include "su1/quantum_computing_manager_6.hpp"
-#include "su1/relativistic_computing_manager_6.hpp"
-#include "su1/subatomic_computing_manager_6.hpp"
-#include "su1/nanoscopic_computing_manager_6.hpp"
-#include "su1/microscopic_computing_manager_6.hpp"
-#include "su1/macroscopic_computing_manager_6.hpp"
-#include "su1/cosmic_computing_manager_6.hpp"
-#include "su1/universal_computing_manager_6.hpp"
-#include "su1/multiversal_computing_manager_6.hpp"
-#include "su1/omniversal_computing_manager_6.hpp"
-#include "su1/quantum_computing_manager_7.hpp"
-#include "su1/relativistic_computing_manager_7.hpp"
-#include "su1/subatomic_computing_manager_7.hpp"
-#include "su1/nanoscopic_computing_manager_7.hpp"
-#include "su1/microscopic_computing_manager_7.hpp"
-#include "su1/macroscopic_computing_manager_7.hpp"
-#include "su1/cosmic_computing_manager_7.hpp"
-#include "su1/universal_computing_manager_7.hpp"
-#include "su1/multiversal_computing_manager_7.hpp"
-#include "su1/omniversal_computing_manager_7.hpp"
-#include "su1/quantum_computing_manager_8.hpp"
-#include "su1/relativistic_computing_manager_8.hpp"
-#include "su1/subatomic_computing_manager_8.hpp"
-#include "su1/nanoscopic_computing_manager_8.hpp"
-#include "su1/microscopic_computing_manager_8.hpp"
-#include "su1/macroscopic_computing_manager_8.hpp"
-#include "su1/cosmic_computing_manager_8.hpp"
-#include "su1/universal_computing_manager_8.hpp"
-#include "su1/multiversal_computing_manager_8.hpp"
-#include "su1/omniversal_computing_manager_8.hpp"
-#include "su1/quantum_computing_manager_9.hpp"
-#include "su1/relativistic_computing_manager_9.hpp"
-#include "su1/subatomic_computing_manager_9.hpp"
-#include "su1/nanoscopic_computing_manager_9.hpp"
-#include "su1/microscopic_computing_manager_9.hpp"
-#include "su1/macroscopic_computing_manager_9.hpp"
-#include "su1/cosmic_computing_manager_9.hpp"
-#include "su1/universal_computing_manager_9.hpp"
-#include "su1/multiversal_computing_manager_9.hpp"
-#include "su1/omniversal_computing_manager_9.hpp"
-#include "su1/quantum_computing_manager_10.hpp"
-#include "su1/relativistic_computing_manager_10.hpp"
-#include "su1/subatomic_computing_manager_10.hpp"
-#include "su1/nanoscopic_computing_manager_10.hpp"
-#include "su1/microscopic_computing_manager_10.hpp"
-#include "su1/macroscopic_computing_manager_10.hpp"
-#include "su1/cosmic_computing_manager_10.hpp"
-#include "su1/universal_computing_manager_10.hpp"
-#include "su1/multiversal_computing_manager_10.hpp"
-#include "su1/omniversal_computing_manager_10.hpp"
+#include "su1/manager_base.hpp"
 
 namespace su1 {
 
@@ -657,187 +480,15 @@ private:
     DisplayServerStats stats_;
     CommandLineOptions options_;
 
-    Ptr<DisplayManager> display_manager_;
-    Ptr<WindowManager> window_manager_;
-    Ptr<Compositor> compositor_;
-    Ptr<InputManager> input_manager_;
-    Ptr<Renderer> renderer_;
-    Ptr<Theme> theme_;
-    Ptr<Config> config_;
-    Ptr<PluginManager> plugin_manager_;
-    Ptr<NotificationManager> notification_manager_;
-    Ptr<PowerManager> power_manager_;
-    Ptr<SecurityManager> security_manager_;
-    Ptr<PerformanceMonitor> performance_monitor_;
-    Ptr<AccessibilityManager> accessibility_manager_;
-    Ptr<HotkeyManager> hotkey_manager_;
-    Ptr<AnimationEngine> animation_engine_;
-    Ptr<EffectEngine> effect_engine_;
-    Ptr<ResourceManager> resource_manager_;
-    Ptr<SessionManager> session_manager_;
-    Ptr<NetworkManager> network_manager_;
-    Ptr<AudioManager> audio_manager_;
-    Ptr<VideoManager> video_manager_;
-    Ptr<CameraManager> camera_manager_;
-    Ptr<SensorManager> sensor_manager_;
-    Ptr<BluetoothManager> bluetooth_manager_;
-    Ptr<WifiManager> wifi_manager_;
-    Ptr<CellularManager> cellular_manager_;
-    Ptr<GPSManager> gps_manager_;
-    Ptr<NFCManager> nfc_manager_;
-    Ptr<RFIDManager> rfid_manager_;
-    Ptr<BarcodeManager> barcode_manager_;
-    Ptr<FingerprintManager> fingerprint_manager_;
-    Ptr<FaceManager> face_manager_;
-    Ptr<IrisManager> iris_manager_;
-    Ptr<VoiceManager> voice_manager_;
-    Ptr<GestureManager> gesture_manager_;
-    Ptr<HapticManager> haptic_manager_;
-    Ptr<ForceManager> force_manager_;
-    Ptr<PressureManager> pressure_manager_;
-    Ptr<TemperatureManager> temperature_manager_;
-    Ptr<HumidityManager> humidity_manager_;
-    Ptr<LightManager> light_manager_;
-    Ptr<ColorManager> color_manager_;
-    Ptr<ProximityManager> proximity_manager_;
-    Ptr<AccelerationManager> acceleration_manager_;
-    Ptr<GyroscopeManager> gyroscope_manager_;
-    Ptr<MagnetometerManager> magnetometer_manager_;
-    Ptr<BarometerManager> barometer_manager_;
-    Ptr<AltimeterManager> altimeter_manager_;
-    Ptr<CompassManager> compass_manager_;
-    Ptr<PedometerManager> pedometer_manager_;
-    Ptr<StepManager> step_manager_;
-    Ptr<ActivityManager> activity_manager_;
-    Ptr<HeartRateManager> heart_rate_manager_;
-    Ptr<BloodPressureManager> blood_pressure_manager_;
-    Ptr<GlucoseManager> glucose_manager_;
-    Ptr<OxygenManager> oxygen_manager_;
-    Ptr<ECGManager> ecg_manager_;
-    Ptr<EMGManager> emg_manager_;
-    Ptr<EEGManager> eeg_manager_;
-    Ptr<EOGManager> eog_manager_;
-    Ptr<GSRManager> gsr_manager_;
-    Ptr<RespirationManager> respiration_manager_;
-    Ptr<BodyTemperatureManager> body_temperature_manager_;
-    Ptr<SkinTemperatureManager> skin_temperature_manager_;
-    Ptr<AmbientTemperatureManager> ambient_temperature_manager_;
-    Ptr<UVManager> uv_manager_;
-    Ptr<RadiationManager> radiation_manager_;
-    Ptr<ChemicalManager> chemical_manager_;
-    Ptr<BiologicalManager> biological_manager_;
-    Ptr<GeneticManager> genetic_manager_;
-    Ptr<NeuralManager> neural_manager_;
-    Ptr<QuantumManager> quantum_manager_;
-    Ptr<RelativisticManager> relativistic_manager_;
-    Ptr<SubatomicManager> subatomic_manager_;
-    Ptr<NanoscopicManager> nanoscopic_manager_;
-    Ptr<MicroscopicManager> microscopic_manager_;
-    Ptr<MacroscopicManager> macroscopic_manager_;
-    Ptr<CosmicManager> cosmic_manager_;
-    Ptr<UniversalManager> universal_manager_;
-    Ptr<MultiversalManager> multiversal_manager_;
-    Ptr<OmniversalManager> omniversal_manager_;
-    Ptr<QuantumComputingManager> quantum_computing_manager_;
-    Ptr<RelativisticComputingManager> relativistic_computing_manager_;
-    Ptr<SubatomicComputingManager> subatomic_computing_manager_;
-    Ptr<NanoscopicComputingManager> nanoscopic_computing_manager_;
-    Ptr<MicroscopicComputingManager> microscopic_computing_manager_;
-    Ptr<MacroscopicComputingManager> macroscopic_computing_manager_;
-    Ptr<CosmicComputingManager> cosmic_computing_manager_;
-    Ptr<UniversalComputingManager> universal_computing_manager_;
-    Ptr<MultiversalComputingManager> multiversal_computing_manager_;
-    Ptr<OmniversalComputingManager> omniversal_computing_manager_;
-    Ptr<QuantumComputingManager2> quantum_computing_manager_2_;
-    Ptr<RelativisticComputingManager2> relativistic_computing_manager_2_;
-    Ptr<SubatomicComputingManager2> subatomic_computing_manager_2_;
-    Ptr<NanoscopicComputingManager2> nanoscopic_computing_manager_2_;
-    Ptr<MicroscopicComputingManager2> microscopic_computing_manager_2_;
-    Ptr<MacroscopicComputingManager2> macroscopic_computing_manager_2_;
-    Ptr<CosmicComputingManager2> cosmic_computing_manager_2_;
-    Ptr<UniversalComputingManager2> universal_computing_manager_2_;
-    Ptr<MultiversalComputingManager2> multiversal_computing_manager_2_;
-    Ptr<OmniversalComputingManager2> omniversal_computing_manager_2_;
-    Ptr<QuantumComputingManager3> quantum_computing_manager_3_;
-    Ptr<RelativisticComputingManager3> relativistic_computing_manager_3_;
-    Ptr<SubatomicComputingManager3> subatomic_computing_manager_3_;
-    Ptr<NanoscopicComputingManager3> nanoscopic_computing_manager_3_;
-    Ptr<MicroscopicComputingManager3> microscopic_computing_manager_3_;
-    Ptr<MacroscopicComputingManager3> macroscopic_computing_manager_3_;
-    Ptr<CosmicComputingManager3> cosmic_computing_manager_3_;
-    Ptr<UniversalComputingManager3> universal_computing_manager_3_;
-    Ptr<MultiversalComputingManager3> multiversal_computing_manager_3_;
-    Ptr<OmniversalComputingManager3> omniversal_computing_manager_3_;
-    Ptr<QuantumComputingManager4> quantum_computing_manager_4_;
-    Ptr<RelativisticComputingManager4> relativistic_computing_manager_4_;
-    Ptr<SubatomicComputingManager4> subatomic_computing_manager_4_;
-    Ptr<NanoscopicComputingManager4> nanoscopic_computing_manager_4_;
-    Ptr<MicroscopicComputingManager4> microscopic_computing_manager_4_;
-    Ptr<MacroscopicComputingManager4> macroscopic_computing_manager_4_;
-    Ptr<CosmicComputingManager4> cosmic_computing_manager_4_;
-    Ptr<UniversalComputingManager4> universal_computing_manager_4_;
-    Ptr<MultiversalComputingManager4> multiversal_computing_manager_4_;
-    Ptr<OmniversalComputingManager4> omniversal_computing_manager_4_;
-    Ptr<QuantumComputingManager5> quantum_computing_manager_5_;
-    Ptr<RelativisticComputingManager5> relativistic_computing_manager_5_;
-    Ptr<SubatomicComputingManager5> subatomic_computing_manager_5_;
-    Ptr<NanoscopicComputingManager5> nanoscopic_computing_manager_5_;
-    Ptr<MicroscopicComputingManager5> microscopic_computing_manager_5_;
-    Ptr<MacroscopicComputingManager5> macroscopic_computing_manager_5_;
-    Ptr<CosmicComputingManager5> cosmic_computing_manager_5_;
-    Ptr<UniversalComputingManager5> universal_computing_manager_5_;
-    Ptr<MultiversalComputingManager5> multiversal_computing_manager_5_;
-    Ptr<OmniversalComputingManager5> omniversal_computing_manager_5_;
-    Ptr<QuantumComputingManager6> quantum_computing_manager_6_;
-    Ptr<RelativisticComputingManager6> relativistic_computing_manager_6_;
-    Ptr<SubatomicComputingManager6> subatomic_computing_manager_6_;
-    Ptr<NanoscopicComputingManager6> nanoscopic_computing_manager_6_;
-    Ptr<MicroscopicComputingManager6> microscopic_computing_manager_6_;
-    Ptr<MacroscopicComputingManager6> macroscopic_computing_manager_6_;
-    Ptr<CosmicComputingManager6> cosmic_computing_manager_6_;
-    Ptr<UniversalComputingManager6> universal_computing_manager_6_;
-    Ptr<MultiversalComputingManager6> multiversal_computing_manager_6_;
-    Ptr<OmniversalComputingManager6> omniversal_computing_manager_6_;
-    Ptr<QuantumComputingManager7> quantum_computing_manager_7_;
-    Ptr<RelativisticComputingManager7> relativistic_computing_manager_7_;
-    Ptr<SubatomicComputingManager7> subatomic_computing_manager_7_;
-    Ptr<NanoscopicComputingManager7> nanoscopic_computing_manager_7_;
-    Ptr<MicroscopicComputingManager7> microscopic_computing_manager_7_;
-    Ptr<MacroscopicComputingManager7> macroscopic_computing_manager_7_;
-    Ptr<CosmicComputingManager7> cosmic_computing_manager_7_;
-    Ptr<UniversalComputingManager7> universal_computing_manager_7_;
-    Ptr<MultiversalComputingManager7> multiversal_computing_manager_7_;
-    Ptr<OmniversalComputingManager7> omniversal_computing_manager_7_;
-    Ptr<QuantumComputingManager8> quantum_computing_manager_8_;
-    Ptr<RelativisticComputingManager8> relativistic_computing_manager_8_;
-    Ptr<SubatomicComputingManager8> subatomic_computing_manager_8_;
-    Ptr<NanoscopicComputingManager8> nanoscopic_computing_manager_8_;
-    Ptr<MicroscopicComputingManager8> microscopic_computing_manager_8_;
-    Ptr<MacroscopicComputingManager8> macroscopic_computing_manager_8_;
-    Ptr<CosmicComputingManager8> cosmic_computing_manager_8_;
-    Ptr<UniversalComputingManager8> universal_computing_manager_8_;
-    Ptr<MultiversalComputingManager8> multiversal_computing_manager_8_;
-    Ptr<OmniversalComputingManager8> omniversal_computing_manager_8_;
-    Ptr<QuantumComputingManager9> quantum_computing_manager_9_;
-    Ptr<RelativisticComputingManager9> relativistic_computing_manager_9_;
-    Ptr<SubatomicComputingManager9> subatomic_computing_manager_9_;
-    Ptr<NanoscopicComputingManager9> nanoscopic_computing_manager_9_;
-    Ptr<MicroscopicComputingManager9> microscopic_computing_manager_9_;
-    Ptr<MacroscopicComputingManager9> macroscopic_computing_manager_9_;
-    Ptr<CosmicComputingManager9> cosmic_computing_manager_9_;
-    Ptr<UniversalComputingManager9> universal_computing_manager_9_;
-    Ptr<MultiversalComputingManager9> multiversal_computing_manager_9_;
-    Ptr<OmniversalComputingManager9> omniversal_computing_manager_9_;
-    Ptr<QuantumComputingManager10> quantum_computing_manager_10_;
-    Ptr<RelativisticComputingManager10> relativistic_computing_manager_10_;
-    Ptr<SubatomicComputingManager10> subatomic_computing_manager_10_;
-    Ptr<NanoscopicComputingManager10> nanoscopic_computing_manager_10_;
-    Ptr<MicroscopicComputingManager10> microscopic_computing_manager_10_;
-    Ptr<MacroscopicComputingManager10> macroscopic_computing_manager_10_;
-    Ptr<CosmicComputingManager10> cosmic_computing_manager_10_;
-    Ptr<UniversalComputingManager10> universal_computing_manager_10_;
-    Ptr<MultiversalComputingManager10> multiversal_computing_manager_10_;
-    Ptr<OmniversalComputingManager10> omniversal_computing_manager_10_;
+    std::shared_ptr<DisplayManager> display_manager_;
+    std::shared_ptr<WindowManager> window_manager_;
+    std::shared_ptr<ResourceManager> resource_manager_;
+    std::shared_ptr<PerformanceModeManager> performance_mode_manager_;
+    std::shared_ptr<AdvancedSettingsManager> advanced_settings_manager_;
+    std::shared_ptr<NeuralWorkspaceManager> neural_workspace_manager_;
+    std::shared_ptr<QuantumWindowManager> quantum_window_manager_;
+    std::shared_ptr<ThemeManager> theme_manager_;
+    std::shared_ptr<UIManager> ui_manager_;
 
     Timer frame_timer_;
     Timer event_timer_;
@@ -880,6 +531,88 @@ private:
     void pico_tune_system();
 };
 
-}
+// Manager pointer typedefs
+using DisplayServerPtr = std::shared_ptr<DisplayServer>;
+using DisplayManagerPtr = std::shared_ptr<DisplayManager>;
+using WindowManagerPtr = std::shared_ptr<WindowManager>;
+using CompositorPtr = std::shared_ptr<Compositor>;
+using InputManagerPtr = std::shared_ptr<InputManager>;
+using RendererPtr = std::shared_ptr<Renderer>;
+using ThemePtr = std::shared_ptr<Theme>;
+using ConfigPtr = std::shared_ptr<Config>;
+using PluginManagerPtr = std::shared_ptr<PluginManager>;
+using NotificationManagerPtr = std::shared_ptr<NotificationManager>;
+using PowerManagerPtr = std::shared_ptr<PowerManager>;
+using SecurityManagerPtr = std::shared_ptr<SecurityManager>;
+using PerformanceMonitorPtr = std::shared_ptr<PerformanceMonitor>;
+using AccessibilityManagerPtr = std::shared_ptr<AccessibilityManager>;
+using HotkeyManagerPtr = std::shared_ptr<HotkeyManager>;
+using AnimationEnginePtr = std::shared_ptr<AnimationEngine>;
+using EffectEnginePtr = std::shared_ptr<EffectEngine>;
+using ResourceManagerPtr = std::shared_ptr<ResourceManager>;
+using SessionManagerPtr = std::shared_ptr<SessionManager>;
+using NetworkManagerPtr = std::shared_ptr<NetworkManager>;
+using AudioManagerPtr = std::shared_ptr<AudioManager>;
+using VideoManagerPtr = std::shared_ptr<VideoManager>;
+using CameraManagerPtr = std::shared_ptr<CameraManager>;
+using SensorManagerPtr = std::shared_ptr<SensorManager>;
+using BluetoothManagerPtr = std::shared_ptr<BluetoothManager>;
+using WifiManagerPtr = std::shared_ptr<WifiManager>;
+using CellularManagerPtr = std::shared_ptr<CellularManager>;
+using GPSManagerPtr = std::shared_ptr<GPSManager>;
+using NFCManagerPtr = std::shared_ptr<NFCManager>;
+using RFIDManagerPtr = std::shared_ptr<RFIDManager>;
+using BarcodeManagerPtr = std::shared_ptr<BarcodeManager>;
+using FingerprintManagerPtr = std::shared_ptr<FingerprintManager>;
+using FaceManagerPtr = std::shared_ptr<FaceManager>;
+using IrisManagerPtr = std::shared_ptr<IrisManager>;
+using VoiceManagerPtr = std::shared_ptr<VoiceManager>;
+using GestureManagerPtr = std::shared_ptr<GestureManager>;
+using HapticManagerPtr = std::shared_ptr<HapticManager>;
+using ForceManagerPtr = std::shared_ptr<ForceManager>;
+using PressureManagerPtr = std::shared_ptr<PressureManager>;
+using TemperatureManagerPtr = std::shared_ptr<TemperatureManager>;
+using HumidityManagerPtr = std::shared_ptr<HumidityManager>;
+using LightManagerPtr = std::shared_ptr<LightManager>;
+using ColorManagerPtr = std::shared_ptr<ColorManager>;
+using ProximityManagerPtr = std::shared_ptr<ProximityManager>;
+using AccelerationManagerPtr = std::shared_ptr<AccelerationManager>;
+using GyroscopeManagerPtr = std::shared_ptr<GyroscopeManager>;
+using MagnetometerManagerPtr = std::shared_ptr<MagnetometerManager>;
+using BarometerManagerPtr = std::shared_ptr<BarometerManager>;
+using AltimeterManagerPtr = std::shared_ptr<AltimeterManager>;
+using CompassManagerPtr = std::shared_ptr<CompassManager>;
+using PedometerManagerPtr = std::shared_ptr<PedometerManager>;
+using StepManagerPtr = std::shared_ptr<StepManager>;
+using ActivityManagerPtr = std::shared_ptr<ActivityManager>;
+using HeartRateManagerPtr = std::shared_ptr<HeartRateManager>;
+using BloodPressureManagerPtr = std::shared_ptr<BloodPressureManager>;
+using GlucoseManagerPtr = std::shared_ptr<GlucoseManager>;
+using OxygenManagerPtr = std::shared_ptr<OxygenManager>;
+using ECGManagerPtr = std::shared_ptr<ECGManager>;
+using EMGManagerPtr = std::shared_ptr<EMGManager>;
+using EEGManagerPtr = std::shared_ptr<EEGManager>;
+using EOGManagerPtr = std::shared_ptr<EOGManager>;
+using GSRManagerPtr = std::shared_ptr<GSRManager>;
+using RespirationManagerPtr = std::shared_ptr<RespirationManager>;
+using BodyTemperatureManagerPtr = std::shared_ptr<BodyTemperatureManager>;
+using SkinTemperatureManagerPtr = std::shared_ptr<SkinTemperatureManager>;
+using AmbientTemperatureManagerPtr = std::shared_ptr<AmbientTemperatureManager>;
+using UVManagerPtr = std::shared_ptr<UVManager>;
+using RadiationManagerPtr = std::shared_ptr<RadiationManager>;
+using ChemicalManagerPtr = std::shared_ptr<ChemicalManager>;
+using BiologicalManagerPtr = std::shared_ptr<BiologicalManager>;
+using GeneticManagerPtr = std::shared_ptr<GeneticManager>;
+using NeuralManagerPtr = std::shared_ptr<NeuralManager>;
+using QuantumManagerPtr = std::shared_ptr<QuantumManager>;
+using RelativisticManagerPtr = std::shared_ptr<RelativisticManager>;
+using SubatomicManagerPtr = std::shared_ptr<SubatomicManager>;
+using NanoscopicManagerPtr = std::shared_ptr<NanoscopicManager>;
+using MicroscopicManagerPtr = std::shared_ptr<MicroscopicManager>;
+using MacroscopicManagerPtr = std::shared_ptr<MacroscopicManager>;
+using CosmicManagerPtr = std::shared_ptr<CosmicManager>;
+using UniversalManagerPtr = std::shared_ptr<UniversalManager>;
+using MultiversalManagerPtr = std::shared_ptr<MultiversalManager>;
+using OmniversalManagerPtr = std::shared_ptr<OmniversalManager>;
 
-#endif
+}

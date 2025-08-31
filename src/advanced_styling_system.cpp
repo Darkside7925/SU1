@@ -518,3 +518,4 @@ Vec4 AdvancedStylingSystem::sample_gradient(const std::string& name, float t) co
 }
 
 } // namespace SU1
+

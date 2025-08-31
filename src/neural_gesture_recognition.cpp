@@ -769,3 +769,4 @@ void NeuralGestureRecognition::adapt_neural_networks() {
 }
 
 } // namespace SU1
+

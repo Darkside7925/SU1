@@ -2,13 +2,12 @@
 
 #include "su1/core.hpp"
 #include "su1/window.hpp"
-#include <EGL/egl.h>
-#include <GLES2/gl2.h>
-#include <gbm.h>
-#include <drm/drm.h>
-#include <drm/drm_mode.h>
-#include <xf86drm.h>
-#include <xf86drmMode.h>
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <thread>
+#include <atomic>
+#include "../EGL/egl.h"
 
 namespace su1 {
 
@@ -746,5 +745,3 @@ private:
 using DisplayManagerPtr = SharedPtr<DisplayManager>;
 
 }
-
-#endif

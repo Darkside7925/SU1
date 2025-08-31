@@ -1,5 +1,4 @@
 #include "su1/window_manager.hpp"
-#include "su1/core.hpp"
 #include <iostream>
 #include <algorithm>
 #include <memory>

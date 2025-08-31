@@ -1,0 +1,82 @@
+#include "su1/manager_base.hpp"
+
+namespace su1 {
+
+// Basic manager implementations
+class InputManager : public Manager {};
+class Compositor : public Manager {};
+class Theme : public Manager {};
+class Config : public Manager {};
+class NotificationManager : public Manager {};
+class PowerManager : public Manager {};
+class SecurityManager : public Manager {};
+class AccessibilityManager : public Manager {};
+class HotkeyManager : public Manager {};
+class AnimationEngine : public Manager {};
+class EffectEngine : public Manager {};
+class SessionManager : public Manager {};
+class NetworkManager : public Manager {};
+class AudioManager : public Manager {};
+class VideoManager : public Manager {};
+class CameraManager : public Manager {};
+class SensorManager : public Manager {};
+class BluetoothManager : public Manager {};
+class WifiManager : public Manager {};
+class CellularManager : public Manager {};
+class GPSManager : public Manager {};
+class NFCManager : public Manager {};
+class RFIDManager : public Manager {};
+class BarcodeManager : public Manager {};
+class FingerprintManager : public Manager {};
+class FaceManager : public Manager {};
+class IrisManager : public Manager {};
+class VoiceManager : public Manager {};
+class GestureManager : public Manager {};
+class HapticManager : public Manager {};
+class ForceManager : public Manager {};
+class PressureManager : public Manager {};
+class TemperatureManager : public Manager {};
+class HumidityManager : public Manager {};
+class LightManager : public Manager {};
+class ColorManager : public Manager {};
+class ProximityManager : public Manager {};
+class AccelerationManager : public Manager {};
+class GyroscopeManager : public Manager {};
+class MagnetometerManager : public Manager {};
+class BarometerManager : public Manager {};
+class AltimeterManager : public Manager {};
+class CompassManager : public Manager {};
+class PedometerManager : public Manager {};
+class StepManager : public Manager {};
+class ActivityManager : public Manager {};
+class HeartRateManager : public Manager {};
+class BloodPressureManager : public Manager {};
+class GlucoseManager : public Manager {};
+class OxygenManager : public Manager {};
+class ECGManager : public Manager {};
+class EMGManager : public Manager {};
+class EEGManager : public Manager {};
+class EOGManager : public Manager {};
+class GSRManager : public Manager {};
+class RespirationManager : public Manager {};
+class BodyTemperatureManager : public Manager {};
+class SkinTemperatureManager : public Manager {};
+class AmbientTemperatureManager : public Manager {};
+class UVManager : public Manager {};
+class RadiationManager : public Manager {};
+class ChemicalManager : public Manager {};
+class BiologicalManager : public Manager {};
+class GeneticManager : public Manager {};
+class NeuralManager : public Manager {};
+class QuantumManager : public Manager {};
+class RelativisticManager : public Manager {};
+class SubatomicManager : public Manager {};
+class NanoscopicManager : public Manager {};
+class MicroscopicManager : public Manager {};
+class MacroscopicManager : public Manager {};
+class CosmicManager : public Manager {};
+class UniversalManager : public Manager {};
+class MultiversalManager : public Manager {};
+class OmniversalManager : public Manager {};
+
+} // namespace su1

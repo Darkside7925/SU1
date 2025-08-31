@@ -561,3 +561,4 @@ void PerformanceModeManager::update_mode_setting(const std::string& mode_name, c
 }
 
 } // namespace SU1
+

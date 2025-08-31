@@ -781,3 +781,4 @@ void QuantumUIRenderer::cleanup_vulkan_resources() {
 }
 
 } // namespace SU1
+

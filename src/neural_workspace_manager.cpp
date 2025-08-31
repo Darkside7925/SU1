@@ -618,3 +618,4 @@ void NeuralWorkspaceManager::suggest_app_placement(const Impl::ApplicationSugges
 }
 
 } // namespace SU1
+

@@ -617,4 +617,3 @@ void attune_universal_color_frequencies(ColorPalette& palette);
 
 }
 
-#endif

@@ -1,79 +1,16 @@
 set(SU1_SOURCES
     main.cpp
-    display_manager.cpp
-    window_manager.cpp
-    ui_components.cpp
-    theming.cpp
-    ai_compositor.cpp
-    quantum_window_manager.cpp
-    extreme_graphics_engine.cpp
-    gpu_accelerated_ui.cpp
-    advanced_input_processor.cpp
-    neural_theme_engine.cpp
-    fluid_animation_engine.cpp
-    enhanced_window_decorator.cpp
-    enhanced_taskbar.cpp
-    advanced_app_switcher.cpp
-    neural_workspace_manager.cpp
-    quantum_compositor.cpp
-    consciousness_driven_ui.cpp
-    holographic_particle_system.cpp
-    neural_gesture_recognition.cpp
-    quantum_ui_renderer.cpp
-    fractal_animation_engine.cpp
-    consciousness_simulation_system.cpp
-    advanced_settings_manager.cpp
-    advanced_styling_system.cpp
-    fluid_animation_controller.cpp
-    advanced_window_styling.cpp
-    high_performance_quantum_renderer.cpp
-    performance_mode_manager.cpp
-    configuration_registry.cpp
-    performance_profiler.cpp
+    managers.cpp
 )
 
 add_executable(su1 ${SU1_SOURCES})
 
 target_link_libraries(su1
-    ${DRM_LIBRARIES}
-    ${GBM_LIBRARIES}
-    ${EGL_LIBRARIES}
-    ${GLES2_LIBRARIES}
-    ${INPUT_LIBRARIES}
-    ${UDEV_LIBRARIES}
-    ${CAIRO_LIBRARIES}
-    ${PANGO_LIBRARIES}
-    ${FREETYPE_LIBRARIES}
-    ${HARFBUZZ_LIBRARIES}
-    ${PIXMAN_LIBRARIES}
-    ${LIBRSVG_LIBRARIES}
-    ${JSON_LIBRARIES}
-    ${GLIB_LIBRARIES}
-    ${GIO_LIBRARIES}
-    ${GOBJECT_LIBRARIES}
-    ${GDK_PIXBUF_LIBRARIES}
-    ${GTK_LIBRARIES}
-    ${GMODULE_LIBRARIES}
-    Vulkan::Vulkan
     Threads::Threads
-    dl
-    m
-    rt
-    numa
 )
 
-target_compile_options(su1 PRIVATE
-    -O3
-    -march=native
-    -mtune=native
-    -flto
-    -fomit-frame-pointer
-    -ffast-math
-    -funroll-loops
-    -fno-exceptions
-    -fno-rtti
-    -Wall
-    -Wextra
-    -Werror
-    -Wno-unused-parameter
-)
+if(MSVC)
+    target_compile_options(su1 PRIVATE /O2 /DNDEBUG)
+else()
+    target_compile_options(su1 PRIVATE -O3 -march=native -mtune=native)
+endif()

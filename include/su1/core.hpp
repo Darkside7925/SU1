@@ -790,8 +790,8 @@ public:
     bool empty() const { return cache_.empty(); }
 private:
     usize capacity_;
-    Map<String, Pair<T, typename List<String>::iterator>> cache_;
-    List<String> order_;
+    std::unordered_map<String, std::pair<T, typename std::list<String>::iterator>> cache_;
+    std::list<String> order_;
 };
 
 u64 get_timestamp();
@@ -986,11 +986,11 @@ private:
 
 class JSONParser {
 public:
-    static Optional<Any> parse(const String& json);
-    static String stringify(const Any& value, bool pretty = false);
+    static std::optional<std::any> parse(const String& json);
+    static String stringify(const std::any& value, bool pretty = false);
 private:
-    static Optional<Any> parse_value(const String& json, usize& index);
-    static String stringify_value(const Any& value, usize indent = 0);
+    static std::optional<std::any> parse_value(const String& json, usize& index);
+    static String stringify_value(const std::any& value, usize indent = 0);
 };
 
 class PluginLoader {
@@ -1000,40 +1000,36 @@ public:
     bool load_plugin(const String& name);
     bool unload_plugin(const String& name);
     void* get_symbol(const String& plugin_name, const String& symbol_name);
-    Vector<String> get_loaded_plugins() const;
-    Vector<String> get_available_plugins() const;
+    std::vector<String> get_loaded_plugins() const;
+    std::vector<String> get_available_plugins() const;
 private:
     Path plugin_directory_;
-    Map<String, void*> loaded_plugins_;
-    Map<String, Vector<String>> plugin_symbols_;
+    std::unordered_map<String, void*> loaded_plugins_;
+    std::unordered_map<String, std::vector<String>> plugin_symbols_;
 };
 
+template<typename... Args>
 class Signal {
 public:
     using ConnectionId = u64;
     Signal() : next_id_(0) {}
-    template<typename... Args>
-    ConnectionId connect(Function<void(Args...)> callback) {
+    ConnectionId connect(std::function<void(Args...)> callback) {
         ConnectionId id = next_id_++;
-        connections_[id] = [callback](const Any& args) {
-            std::apply(callback, std::any_cast<Tuple<Args...>>(args));
-        };
+        connections_[id] = callback;
         return id;
     }
     void disconnect(ConnectionId id) {
         connections_.erase(id);
     }
-    template<typename... Args>
     void emit(Args... args) {
-        Tuple<Args...> tuple_args = {args...};
         for (auto& connection : connections_) {
-            connection.second(tuple_args);
+            connection.second(args...);
         }
     }
     void clear() { connections_.clear(); }
     usize connection_count() const { return connections_.size(); }
 private:
-    Map<ConnectionId, Function<void(const Any&)>> connections_;
+    std::unordered_map<ConnectionId, std::function<void(Args...)>> connections_;
     ConnectionId next_id_;
 };
 
@@ -1071,57 +1067,57 @@ public:
             changed_signal_.emit(value_);
         }
     }
-    Signal<void(const T&)>& changed() { return changed_signal_; }
+    Signal<T>& changed() { return changed_signal_; }
 private:
     T value_;
-    Signal<void(const T&)> changed_signal_;
+    Signal<T> changed_signal_;
 };
 
 template<typename T>
-class ObservableVector : public Vector<T> {
+class ObservableVector : public std::vector<T> {
 public:
-    using Vector<T>::Vector;
+    using std::vector<T>::vector;
     void push_back(const T& value) {
-        Vector<T>::push_back(value);
+        std::vector<T>::push_back(value);
         added_signal_.emit(value, this->size() - 1);
     }
     void push_back(T&& value) {
-        Vector<T>::push_back(std::move(value));
+        std::vector<T>::push_back(std::move(value));
         added_signal_.emit(this->back(), this->size() - 1);
     }
     void pop_back() {
         if (!this->empty()) {
             T value = this->back();
-            Vector<T>::pop_back();
+            std::vector<T>::pop_back();
             removed_signal_.emit(value, this->size());
         }
     }
     void insert(usize index, const T& value) {
-        Vector<T>::insert(this->begin() + index, value);
+        std::vector<T>::insert(this->begin() + index, value);
         added_signal_.emit(value, index);
     }
     void insert(usize index, T&& value) {
-        Vector<T>::insert(this->begin() + index, std::move(value));
+        std::vector<T>::insert(this->begin() + index, std::move(value));
         added_signal_.emit(this->at(index), index);
     }
     void erase(usize index) {
         if (index < this->size()) {
             T value = this->at(index);
-            Vector<T>::erase(this->begin() + index);
+            std::vector<T>::erase(this->begin() + index);
             removed_signal_.emit(value, index);
         }
     }
     void clear() {
-        Vector<T>::clear();
+        std::vector<T>::clear();
         cleared_signal_.emit();
     }
-    Signal<void(const T&, usize)>& added() { return added_signal_; }
-    Signal<void(const T&, usize)>& removed() { return removed_signal_; }
-    Signal<void()>& cleared() { return cleared_signal_; }
+    Signal<const T&, usize>& added() { return added_signal_; }
+    Signal<const T&, usize>& removed() { return removed_signal_; }
+    Signal<>& cleared() { return cleared_signal_; }
 private:
-    Signal<void(const T&, usize)> added_signal_;
-    Signal<void(const T&, usize)> removed_signal_;
-    Signal<void()> cleared_signal_;
+    Signal<const T&, usize> added_signal_;
+    Signal<const T&, usize> removed_signal_;
+    Signal<> cleared_signal_;
 };
 
 class TaskScheduler {
@@ -1176,11 +1172,11 @@ public:
     ResourceManager();
     ~ResourceManager();
     template<typename T, typename... Args>
-    SharedPtr<T> load(const String& name, Args&&... args) {
+    std::shared_ptr<T> load(const String& name, Args&&... args) {
         String key = typeid(T).name() + name;
         auto it = resources_.find(key);
         if (it != resources_.end()) {
-            return std::static_pointer_cast<T>(it->second);
+            return std::static_pointer_cast<T>(std::any_cast<std::shared_ptr<void>>(it->second));
         }
         auto resource = std::make_shared<T>(std::forward<Args>(args)...);
         resources_[key] = resource;
@@ -1194,7 +1190,7 @@ public:
     void clear();
     usize resource_count() const;
 private:
-    Map<String, Any> resources_;
+    std::unordered_map<String, std::any> resources_;
 };
 
 class EventLoop {
@@ -1246,4 +1242,4 @@ private:
     Atomic<bool> quit_requested_;
 };
 
-} // namespace su1
+}

@@ -520,3 +520,4 @@ void AdvancedWindowStyling::modify_style_int(const std::string& style_name, cons
 }
 
 } // namespace SU1
+

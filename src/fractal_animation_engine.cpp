@@ -594,3 +594,4 @@ void FractalAnimationEngine::perform_fractal_rendering() {
 }
 
 } // namespace SU1
+

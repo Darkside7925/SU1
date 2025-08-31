@@ -1,39 +1,135 @@
 #include "su1/display_manager.hpp"
-#include "su1/logging.hpp"
-#include "su1/profiler.hpp"
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/mman.h>
+#include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <thread>
+#include <chrono>
 
 namespace su1 {
 
 Display::Display(const DisplayInfo& info)
     : info_(info)
-    , initialized_(false)
-    , drm_fd_(-1)
-    , crtc_(nullptr)
-    , connector_(nullptr)
-    , encoder_(nullptr)
-    , gbm_device_(nullptr)
-    , gbm_surface_(nullptr)
-    , egl_display_(EGL_NO_DISPLAY)
-    , egl_context_(EGL_NO_CONTEXT)
-    , egl_surface_(EGL_NO_SURFACE)
-    , framebuffer_id_(0)
-    , framebuffer_data_(nullptr)
-    , framebuffer_size_(0)
-    , frame_count_(0)
-    , total_frame_time_(0.0)
-    , average_frame_time_(0.0)
-    , peak_frame_time_(0.0)
-    , vsync_enabled_(true)
-    , adaptive_sync_enabled_(false)
-    , low_latency_mode_(false)
-    , high_quality_mode_(true) {
-    SU1_PROFILE_FUNCTION();
+    , initialized_(false) {
+    std::cout << "[DISPLAY] Display created: " << info_.name << " (" << info_.width << "x" << info_.height << ")" << std::endl;
 }
+
+Display::~Display() {
+    if (initialized_) {
+        shutdown();
+    }
+}
+
+bool Display::initialize() {
+    std::cout << "[DISPLAY] Initializing display: " << info_.name << std::endl;
+
+    initialized_ = true;
+
+    std::cout << "[DISPLAY] Display initialized successfully" << std::endl;
+    std::cout << "[DISPLAY] Resolution: " << info_.width << "x" << info_.height << std::endl;
+    std::cout << "[DISPLAY] Refresh rate: " << info_.refresh_rate << "Hz" << std::endl;
+
+    return true;
+}
+
+void Display::shutdown() {
+    if (initialized_) {
+        std::cout << "[DISPLAY] Shutting down display: " << info_.name << std::endl;
+        initialized_ = false;
+        std::cout << "[DISPLAY] Display shutdown complete" << std::endl;
+    }
+}
+
+bool Display::is_initialized() const {
+    return initialized_;
+}
+
+const DisplayInfo& Display::get_info() const {
+    return info_;
+}
+
+bool Display::set_mode(u32 width, u32 height, u32 refresh_rate) {
+    info_.width = width;
+    info_.height = height;
+    info_.refresh_rate = refresh_rate;
+
+    std::cout << "[DISPLAY] Mode set to: " << width << "x" << height << "@" << refresh_rate << "Hz" << std::endl;
+
+    return true;
+}
+
+DisplayManager::DisplayManager()
+    : initialized_(false) {
+    std::cout << "[DISPLAY_MANAGER] DisplayManager created" << std::endl;
+}
+
+DisplayManager::~DisplayManager() {
+    if (initialized_) {
+        shutdown();
+    }
+}
+
+bool DisplayManager::initialize() {
+    std::cout << "[DISPLAY_MANAGER] Initializing display manager..." << std::endl;
+
+    // Simulate display detection
+    DisplayInfo primary_display;
+    primary_display.name = "Primary Display";
+    primary_display.width = 1920;
+    primary_display.height = 1080;
+    primary_display.refresh_rate = 60;
+    primary_display.type = DisplayType::Monitor;
+    primary_display.connected = true;
+
+    displays_.push_back(std::make_unique<Display>(primary_display));
+    displays_[0]->initialize();
+
+    initialized_ = true;
+
+    std::cout << "[DISPLAY_MANAGER] Display manager initialized successfully" << std::endl;
+    std::cout << "[DISPLAY_MANAGER] Found " << displays_.size() << " display(s)" << std::endl;
+
+    return true;
+}
+
+void DisplayManager::shutdown() {
+    if (initialized_) {
+        std::cout << "[DISPLAY_MANAGER] Shutting down display manager..." << std::endl;
+
+        displays_.clear();
+
+        initialized_ = false;
+        std::cout << "[DISPLAY_MANAGER] Display manager shutdown complete" << std::endl;
+    }
+}
+
+bool DisplayManager::is_initialized() const {
+    return initialized_;
+}
+
+size_t DisplayManager::get_display_count() const {
+    return displays_.size();
+}
+
+Display* DisplayManager::get_display(size_t index) {
+    if (index < displays_.size()) {
+        return displays_[index].get();
+    }
+    return nullptr;
+}
+
+Display* DisplayManager::get_primary_display() {
+    return displays_.empty() ? nullptr : displays_[0].get();
+}
+
+bool DisplayManager::set_display_mode(size_t display_index, u32 width, u32 height, u32 refresh_rate) {
+    Display* display = get_display(display_index);
+    if (display) {
+        return display->set_mode(width, height, refresh_rate);
+    }
+    return false;
+}
+
+} // namespace su1
 
 Display::~Display() {
     SU1_PROFILE_FUNCTION();
