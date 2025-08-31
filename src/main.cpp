@@ -189,11 +189,13 @@ CommandLineOptions parse_command_line(int argc, char** argv) {
     return options;
 }
 
+} // namespace su1
+
 int main(int argc, char** argv) {
-    CommandLineOptions options = parse_command_line(argc, argv);
+    su1::CommandLineOptions options = su1::parse_command_line(argc, argv);
 
     if (options.help) {
-        print_usage(argv[0]);
+        su1::print_usage(argv[0]);
         return 0;
     }
 
@@ -202,24 +204,24 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    print_banner();
+    su1::print_banner();
 
-    Logger::info("Starting SU1 Display Server...");
+    su1::Logger::info("Starting SU1 Display Server...");
 
-    if (!check_requirements()) {
+    if (!su1::check_requirements()) {
         return 1;
     }
 
-    setup_signal_handlers();
-    setup_process_attributes();
-    setup_environment();
+    su1::setup_signal_handlers();
+    su1::setup_process_attributes();
+    su1::setup_environment();
 
     try {
-        Logger::info("SU1 Display Server starting (simplified version)");
+        su1::Logger::info("SU1 Display Server starting (simplified version)");
 
         // Simplified main loop
-        while (running) {
-            Logger::info("SU1 Display Server running...");
+        while (su1::running) {
+            su1::Logger::info("SU1 Display Server running...");
 
             // Simple frame processing
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -227,22 +229,20 @@ int main(int argc, char** argv) {
             // Exit after 5 seconds for demo
             static int counter = 0;
             if (++counter > 5) {
-                Logger::info("Demo completed");
-                running = false;
+                su1::Logger::info("Demo completed");
+                su1::running = false;
             }
         }
 
-        Logger::info("SU1 Display Server shut down successfully");
+        su1::Logger::info("SU1 Display Server shut down successfully");
 
     } catch (const std::exception& e) {
-        Logger::error(String("Exception caught: ") + e.what());
+        su1::Logger::error(su1::String("Exception caught: ") + e.what());
         return 1;
     } catch (...) {
-        Logger::error("Unknown exception caught");
+        su1::Logger::error("Unknown exception caught");
         return 1;
     }
 
     return 0;
-}
-
 }

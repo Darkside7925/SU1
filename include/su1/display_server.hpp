@@ -5,10 +5,77 @@
 #include "su1/window_manager.hpp"
 #include "su1/renderer.hpp"
 #include "su1/manager_base.hpp"
+#include "su1/window_info.hpp"
+#include "su1/theme_manager.hpp"
+#include "su1/ui_manager.hpp"
 
 namespace su1 {
 
-struct CommandLineOptions;
+struct CommandLineOptions {
+    bool help = false;
+    bool version = false;
+    bool debug = false;
+    bool verbose = false;
+    bool quiet = false;
+    bool daemon = false;
+    bool profile = false;
+    bool benchmark = false;
+    bool test = false;
+    bool safe_mode = false;
+    bool recovery_mode = false;
+    bool emergency_mode = false;
+    bool maintenance_mode = false;
+    bool backup_mode = false;
+    bool restore_mode = false;
+    bool migration_mode = false;
+    bool upgrade_mode = false;
+    bool downgrade_mode = false;
+    bool optimization_mode = false;
+    bool minimal_mode = false;
+    bool full_mode = false;
+    bool experimental_mode = false;
+    bool legacy_mode = false;
+    String config_file;
+    String log_file;
+    String pid_file;
+    String socket_path;
+    String theme_name;
+    String layout_name;
+    String display_backend;
+    String renderer_backend;
+    String compositor_backend;
+    String window_manager_backend;
+    String input_backend;
+    String audio_backend;
+    String video_backend;
+    String network_backend;
+    String security_backend;
+    String plugin_directory;
+    u32 display_width = 1920;
+    u32 display_height = 1080;
+    u32 display_refresh_rate = 60;
+    u32 max_fps = 144;
+    usize max_memory_mb = 4096;
+    usize max_cpu_cores = 8;
+    usize buffer_size = 1048576;
+    f32 animation_speed = 1.0f;
+    f32 transparency_level = 1.0f;
+    f32 blur_strength = 0.5f;
+    f32 glow_intensity = 0.3f;
+    f32 particle_density = 0.7f;
+    f32 consciousness_level = 0.0f;
+    f32 ai_level = 0.0f;
+    f32 quantum_level = 0.0f;
+    f32 relativistic_level = 0.0f;
+    f32 subatomic_level = 0.0f;
+    f32 nanoscopic_level = 0.0f;
+    f32 microscopic_level = 0.0f;
+    f32 macroscopic_level = 0.0f;
+    f32 cosmic_level = 0.0f;
+    f32 universal_level = 0.0f;
+    f32 multiversal_level = 0.0f;
+    f32 omniversal_level = 0.0f;
+};
 
 enum class DisplayServerState : u32 {
     Uninitialized = 0,
@@ -312,6 +379,7 @@ public:
     ResourceManager& get_resource_manager() { return *resource_manager_; }
     SessionManager& get_session_manager() { return *session_manager_; }
     NetworkManager& get_network_manager() { return *network_manager_; }
+    UIManager& get_ui_manager() { return *ui_manager_; }
     AudioManager& get_audio_manager() { return *audio_manager_; }
     VideoManager& get_video_manager() { return *video_manager_; }
     CameraManager& get_camera_manager() { return *camera_manager_; }
@@ -489,6 +557,82 @@ private:
     std::shared_ptr<QuantumWindowManager> quantum_window_manager_;
     std::shared_ptr<ThemeManager> theme_manager_;
     std::shared_ptr<UIManager> ui_manager_;
+    std::shared_ptr<Renderer> renderer_;
+    std::shared_ptr<Compositor> compositor_;
+    std::shared_ptr<InputManager> input_manager_;
+    std::shared_ptr<PluginManager> plugin_manager_;
+    std::shared_ptr<NotificationManager> notification_manager_;
+    std::shared_ptr<PowerManager> power_manager_;
+    std::shared_ptr<SecurityManager> security_manager_;
+    std::shared_ptr<PerformanceMonitor> performance_monitor_;
+    std::shared_ptr<AccessibilityManager> accessibility_manager_;
+    std::shared_ptr<HotkeyManager> hotkey_manager_;
+    std::shared_ptr<AnimationEngine> animation_engine_;
+    std::shared_ptr<EffectEngine> effect_engine_;
+    std::shared_ptr<SessionManager> session_manager_;
+    std::shared_ptr<NetworkManager> network_manager_;
+    std::shared_ptr<AudioManager> audio_manager_;
+    std::shared_ptr<VideoManager> video_manager_;
+    std::shared_ptr<CameraManager> camera_manager_;
+    std::shared_ptr<SensorManager> sensor_manager_;
+    std::shared_ptr<BluetoothManager> bluetooth_manager_;
+    std::shared_ptr<WifiManager> wifi_manager_;
+    std::shared_ptr<CellularManager> cellular_manager_;
+    std::shared_ptr<GPSManager> gps_manager_;
+    std::shared_ptr<NFCManager> nfc_manager_;
+    std::shared_ptr<RFIDManager> rfid_manager_;
+    std::shared_ptr<BarcodeManager> barcode_manager_;
+    std::shared_ptr<FingerprintManager> fingerprint_manager_;
+    std::shared_ptr<FaceManager> face_manager_;
+    std::shared_ptr<IrisManager> iris_manager_;
+    std::shared_ptr<VoiceManager> voice_manager_;
+    std::shared_ptr<GestureManager> gesture_manager_;
+    std::shared_ptr<HapticManager> haptic_manager_;
+    std::shared_ptr<ForceManager> force_manager_;
+    std::shared_ptr<PressureManager> pressure_manager_;
+    std::shared_ptr<TemperatureManager> temperature_manager_;
+    std::shared_ptr<HumidityManager> humidity_manager_;
+    std::shared_ptr<LightManager> light_manager_;
+    std::shared_ptr<ColorManager> color_manager_;
+    std::shared_ptr<ProximityManager> proximity_manager_;
+    std::shared_ptr<AccelerationManager> acceleration_manager_;
+    std::shared_ptr<GyroscopeManager> gyroscope_manager_;
+    std::shared_ptr<MagnetometerManager> magnetometer_manager_;
+    std::shared_ptr<BarometerManager> barometer_manager_;
+    std::shared_ptr<AltimeterManager> altimeter_manager_;
+    std::shared_ptr<CompassManager> compass_manager_;
+    std::shared_ptr<PedometerManager> pedometer_manager_;
+    std::shared_ptr<StepManager> step_manager_;
+    std::shared_ptr<ActivityManager> activity_manager_;
+    std::shared_ptr<HeartRateManager> heart_rate_manager_;
+    std::shared_ptr<BloodPressureManager> blood_pressure_manager_;
+    std::shared_ptr<GlucoseManager> glucose_manager_;
+    std::shared_ptr<OxygenManager> oxygen_manager_;
+    std::shared_ptr<ECGManager> ecg_manager_;
+    std::shared_ptr<EMGManager> emg_manager_;
+    std::shared_ptr<EEGManager> eeg_manager_;
+    std::shared_ptr<EOGManager> eog_manager_;
+    std::shared_ptr<GSRManager> gsr_manager_;
+    std::shared_ptr<RespirationManager> respiration_manager_;
+    std::shared_ptr<BodyTemperatureManager> body_temperature_manager_;
+    std::shared_ptr<SkinTemperatureManager> skin_temperature_manager_;
+    std::shared_ptr<AmbientTemperatureManager> ambient_temperature_manager_;
+    std::shared_ptr<UVManager> uv_manager_;
+    std::shared_ptr<RadiationManager> radiation_manager_;
+    std::shared_ptr<ChemicalManager> chemical_manager_;
+    std::shared_ptr<BiologicalManager> biological_manager_;
+    std::shared_ptr<GeneticManager> genetic_manager_;
+    std::shared_ptr<NeuralManager> neural_manager_;
+    std::shared_ptr<QuantumManager> quantum_manager_;
+    std::shared_ptr<RelativisticManager> relativistic_manager_;
+    std::shared_ptr<SubatomicManager> subatomic_manager_;
+    std::shared_ptr<NanoscopicManager> nanoscopic_manager_;
+    std::shared_ptr<MicroscopicManager> microscopic_manager_;
+    std::shared_ptr<MacroscopicManager> macroscopic_manager_;
+    std::shared_ptr<CosmicManager> cosmic_manager_;
+    std::shared_ptr<UniversalManager> universal_manager_;
+    std::shared_ptr<MultiversalManager> multiversal_manager_;
+    std::shared_ptr<OmniversalManager> omniversal_manager_;
 
     Timer frame_timer_;
     Timer event_timer_;

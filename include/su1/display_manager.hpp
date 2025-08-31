@@ -313,7 +313,7 @@ struct DisplayInfo {
     String edid_path;
     Vector<u8> edid_data;
     Map<String, String> properties;
-    Map<String, Any> metadata;
+    Map<String, std::any> metadata;
     f64 connection_time;
     f64 last_update_time;
     u64 frame_count;

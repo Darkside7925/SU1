@@ -7,6 +7,7 @@
 #include <functional>
 #include <atomic>
 #include <mutex>
+#include <shared_mutex>
 #include <chrono>
 #include <thread>
 #include <condition_variable>
@@ -91,6 +92,8 @@
 #include <source_location>
 #include <syncstream>
 #include <version>
+
+#include "su1/declarations.hpp"
 
 namespace su1 {
 
@@ -255,7 +258,7 @@ template<typename T>
 using GammaDistribution = std::gamma_distribution<T>;
 
 template<typename T>
-using WeibullDistribution = std::weibaud_distribution<T>;
+using WeibullDistribution = std::weibull_distribution<T>;
 
 template<typename T>
 using ExtremeValueDistribution = std::extreme_value_distribution<T>;

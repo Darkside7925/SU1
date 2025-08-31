@@ -384,7 +384,7 @@ struct ComponentStyle {
     String animation;
     String transition;
     
-    Map<String, Any> custom_properties;
+    Map<String, std::any> custom_properties;
     
     ComponentStyle();
     void apply_liquid_glass_effect();
@@ -448,8 +448,8 @@ public:
     void set_style(const ComponentStyle& style) { style_ = style; }
     ComponentStyle& get_mutable_style() { return style_; }
     
-    void set_property(const String& name, const Any& value);
-    Any get_property(const String& name) const;
+    void set_property(const String& name, const std::any& value);
+    std::any get_property(const String& name) const;
     bool has_property(const String& name) const;
     
     virtual void update(f64 delta_time);
@@ -474,8 +474,8 @@ public:
     virtual void on_property_changed(const String& name);
     
     // Animation and effects
-    void animate_to(const String& property, const Any& target_value, f32 duration);
-    void animate_property(const String& property, const Any& from, const Any& to, f32 duration);
+    void animate_to(const String& property, const std::any& target_value, f32 duration);
+    void animate_property(const String& property, const std::any& from, const std::any& to, f32 duration);
     void stop_animation(const String& property);
     void stop_all_animations();
     
@@ -511,8 +511,8 @@ protected:
     bool hovered_;
     bool pressed_;
     
-    Map<String, Any> properties_;
-    Map<String, Any> animations_;
+    Map<String, std::any> properties_;
+    Map<String, std::any> animations_;
     
     static u32 next_id_;
     

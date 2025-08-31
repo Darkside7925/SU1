@@ -353,8 +353,8 @@ public:
     void apply_to_component(ComponentPtr component) const;
     void apply_to_component_recursive(ComponentPtr component) const;
     
-    void set_property(const String& key, const Any& value);
-    Any get_property(const String& key) const;
+    void set_property(const String& key, const std::any& value);
+    std::any get_property(const String& key) const;
     bool has_property(const String& key) const;
     
     void inherit_from(const Theme& parent_theme);
@@ -394,7 +394,7 @@ private:
     Spacing spacing_;
     Effects effects_;
     
-    Map<String, Any> properties_;
+    Map<String, std::any> properties_;
     Map<ComponentType, ComponentStyle> component_styles_;
     
     void initialize_default_theme();
@@ -474,8 +474,8 @@ public:
     void set_color_blind_mode(bool enabled);
     bool is_color_blind_mode_enabled() const { return color_blind_mode_enabled_; }
     
-    void apply_user_preferences(const Map<String, Any>& preferences);
-    Map<String, Any> get_user_preferences() const;
+    void apply_user_preferences(const Map<String, std::any>& preferences);
+    Map<String, std::any> get_user_preferences() const;
     
     void start_theme_animation(const String& target_theme, f32 duration = 1.0f);
     void stop_theme_animation();
@@ -535,7 +535,7 @@ private:
     f32 ambient_light_level_;
     f32 consciousness_level_;
     
-    Map<String, Any> user_preferences_;
+    Map<String, std::any> user_preferences_;
     
     Mutex mutex_;
     Thread update_thread_;

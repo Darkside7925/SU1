@@ -30,7 +30,7 @@ public:
         SU1_LOG_INFO("Initializing advanced display server with liquid glass effects");
 
         // Initialize display server
-        display_server_ = MakeShared<DisplayServer>();
+        display_server_ = std::make_shared<DisplayServer>();
         if (!display_server_->initialize()) {
             SU1_LOG_ERROR("Failed to initialize display server");
             return false;
@@ -43,7 +43,7 @@ public:
         renderer_ = display_server_->get_renderer();
 
         // Initialize theme manager
-        theme_manager_ = MakeShared<ThemeManager>();
+        theme_manager_ = std::make_shared<ThemeManager>();
         if (!theme_manager_->initialize()) {
             SU1_LOG_ERROR("Failed to initialize theme manager");
             return false;
