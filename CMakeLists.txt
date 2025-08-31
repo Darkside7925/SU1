@@ -16,7 +16,6 @@ find_package(Threads REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/../S1U/include)
-include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_subdirectory(src)
 add_subdirectory(examples)
